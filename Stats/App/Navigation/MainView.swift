@@ -11,6 +11,8 @@ struct MainView: View {
 
     @StateObject private var dataLoader = NetworkDataLoader()
 
+    @State private var showCharts = false
+
     var body: some View {
         TabView {
             ForEach(Route.allCases, id: \.hashValue) { route in
@@ -19,6 +21,20 @@ struct MainView: View {
                         Color("bg_color").ignoresSafeArea()
                         route.associatedView
                             .navigationTitle(route.label)
+                            .toolbar {
+                                Button {
+                                    showCharts.toggle()
+                                } label: {
+                                    Image(systemName: "chart.xyaxis.line")
+                                }
+                                .sheet(isPresented: $showCharts) {
+                                    ZStack {
+                                        Color("bg_color").ignoresSafeArea()
+                                        StatsView()
+                                    }
+                                }
+
+                            }
                     }
                 }.tabItem {
                     Label(route.label, systemImage: route.image)
