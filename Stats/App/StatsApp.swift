@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import Models
+import DependencyInjection
 
 @main
 struct StatsApp: App {
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
         }
     }
 }
