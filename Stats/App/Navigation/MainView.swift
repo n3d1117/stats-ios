@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct MainView: View {
-    
+
     @StateObject private var dataLoader = NetworkDataLoader()
-    
+
     var body: some View {
         TabView {
             ForEach(Route.allCases, id: \.hashValue) { route in

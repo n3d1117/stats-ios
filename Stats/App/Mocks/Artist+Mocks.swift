@@ -9,5 +9,5 @@ import Models
 
 public extension Artist {
     static let radiohead: Self = .init(id: "1", name: "Radiohead", img: "radiohead.webp")
-    static let ye: Self = .init(id: "2", name: "Kanye West", img: "kanye_west.webp")
+    static let kanye: Self = .init(id: "2", name: "Kanye West", img: "kanye_west.webp")
 }

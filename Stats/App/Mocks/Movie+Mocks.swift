@@ -18,7 +18,7 @@ public extension Movie {
         img: "inception.webp",
         year: 2010
     )
-    
+
     static let donnieDarko: Self = .init(
         id: "2",
         title: "Donnie Darko",
@@ -28,7 +28,7 @@ public extension Movie {
         img: "donnie_darko.webp",
         year: 2001
     )
-    
+
     static let blonde: Self = .init(
         id: "3",
         title: "Blonde",
@@ -38,7 +38,7 @@ public extension Movie {
         img: "blonde.webp",
         year: 2022
     )
-    
+
     static let uncharted: Self = .init(
         id: "4",
         title: "Uncharted",

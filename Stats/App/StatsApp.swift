@@ -11,7 +11,7 @@ import DependencyInjection
 
 @main
 struct StatsApp: App {
-    
+
     var body: some Scene {
         WindowGroup {
             MainView()

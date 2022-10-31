@@ -16,7 +16,7 @@ public struct Game: Codable, Identifiable, Equatable {
         case id = "url"
         case img = "img_webp"
     }
-    
+
     public init(id: String, name: String, year: Int, img: String) {
         self.id = id
         self.name = name

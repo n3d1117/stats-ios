@@ -11,19 +11,19 @@ import DependencyInjection
 import Networking
 
 struct MusicView: View {
-    
+
     @EnvironmentObject var dataLoader: NetworkDataLoader
-    
+
     var body: some View {
         ZStack {
             switch dataLoader.state {
-                
+
             case .success(let response):
                 ScrollView {
                     artistsView(for: response.artists)
                         .padding()
                 }
-                
+
             case .loading:
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -34,7 +34,7 @@ struct MusicView: View {
                     .padding()
                     .redacted(reason: .placeholder)
                 }
-                
+
             case .failed(let error):
                 GenericErrorView(error: error.localizedDescription) {
                     await dataLoader.load()
@@ -43,7 +43,7 @@ struct MusicView: View {
         }
         .animation(.default, value: dataLoader.state)
     }
-    
+
     private func artistsView(for artists: [Artist]) -> some View {
         VStack(alignment: .leading) {
             Text("Music I'm listening to")
@@ -54,9 +54,9 @@ struct MusicView: View {
 }
 
 struct ArtistsGridView: View {
-    
+
     let artists: [Artist]
-    
+
     var body: some View {
         GridView {
             ForEach(artists) { artist in
@@ -73,21 +73,21 @@ struct ArtistsGridView: View {
 }
 
 struct ArtistsGridView_Previews: PreviewProvider {
-    
+
     struct Preview: View {
-        
+
         @StateObject private var dataLoader = NetworkDataLoader()
-        
+
         var body: some View {
             MusicView()
                 .task {
-                    DependencyValues[\.networkService] = .mock(artists: [.radiohead, .ye], wait: true)
+                    DependencyValues[\.networkService] = .mock(artists: [.radiohead, .kanye], wait: true)
                     await dataLoader.load()
                 }
                 .environmentObject(dataLoader)
         }
     }
-    
+
     static var previews: some View {
         Preview()
     }

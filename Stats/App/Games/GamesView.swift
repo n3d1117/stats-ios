@@ -11,19 +11,19 @@ import DependencyInjection
 import Networking
 
 struct GamesView: View {
-    
+
     @EnvironmentObject var dataLoader: NetworkDataLoader
-    
+
     var body: some View {
         ZStack {
             switch dataLoader.state {
-                
+
             case .success(let response):
                 ScrollView {
                     gamesView(for: response.games)
                         .padding()
                 }
-                
+
             case .loading:
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -34,7 +34,7 @@ struct GamesView: View {
                     .padding()
                     .redacted(reason: .placeholder)
                 }
-                
+
             case .failed(let error):
                 GenericErrorView(error: error.localizedDescription) {
                     await dataLoader.load()
@@ -43,7 +43,7 @@ struct GamesView: View {
         }
         .animation(.default, value: dataLoader.state)
     }
-    
+
     private func gamesView(for games: [Game]) -> some View {
         VStack(alignment: .leading) {
             Text("Recently played")
@@ -54,9 +54,9 @@ struct GamesView: View {
 }
 
 struct GamesGridView: View {
-    
+
     let games: [Game]
-    
+
     var body: some View {
         GridView {
             ForEach(games) { game in
@@ -73,11 +73,11 @@ struct GamesGridView: View {
 }
 
 struct GamesGridView_Previews: PreviewProvider {
-    
+
     struct Preview: View {
-        
+
         @StateObject private var dataLoader = NetworkDataLoader()
-        
+
         var body: some View {
             GamesView()
                 .task {
@@ -87,7 +87,7 @@ struct GamesGridView_Previews: PreviewProvider {
                 .environmentObject(dataLoader)
         }
     }
-    
+
     static var previews: some View {
         Preview()
     }

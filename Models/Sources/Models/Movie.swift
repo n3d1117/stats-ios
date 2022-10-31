@@ -24,8 +24,16 @@ public struct Movie: Codable, Identifiable, Equatable {
         case isCinema = "cinema"
         case lastWatched = "last_watch"
     }
-    
-    public init(id: String, title: String, lastWatched: Date, isFavorite: Bool, isCinema: Bool, img: String, year: Int) {
+
+    public init(
+        id: String,
+        title: String,
+        lastWatched: Date,
+        isFavorite: Bool,
+        isCinema: Bool,
+        img: String,
+        year: Int
+    ) {
         self.id = id
         self.title = title
         self.lastWatched = lastWatched

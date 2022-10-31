@@ -18,7 +18,7 @@ public struct APIResponse: Codable {
         case artists = "spotify"
         case games = "videogames"
     }
-    
+
     public init(movies: [Movie], tvShows: [TVShow], books: [Book], artists: [Artist], games: [Game]) {
         self.movies = movies
         self.tvShows = tvShows

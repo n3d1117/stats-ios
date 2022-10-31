@@ -19,7 +19,7 @@ public struct Book: Codable, Identifiable, Equatable {
         case isFavorite = "is_favorite"
         case img = "img_webp"
     }
-    
+
     public init(id: String, title: String, author: String, isFavorite: Bool, reading: Bool, img: String) {
         self.id = id
         self.title = title

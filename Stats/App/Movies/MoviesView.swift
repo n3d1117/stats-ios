@@ -11,19 +11,19 @@ import DependencyInjection
 import Networking
 
 struct MoviesView: View {
-    
+
     @EnvironmentObject var dataLoader: NetworkDataLoader
-    
+
     var body: some View {
         ZStack {
             switch dataLoader.state {
-                
+
             case .success(let response):
                 ScrollView {
                     moviesView(for: response.movies)
                         .padding()
                 }
-                
+
             case .loading:
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -34,7 +34,7 @@ struct MoviesView: View {
                     .padding()
                     .redacted(reason: .placeholder)
                 }
-                
+
             case .failed(let error):
                 GenericErrorView(error: error.localizedDescription) {
                     await dataLoader.load()
@@ -43,17 +43,17 @@ struct MoviesView: View {
         }
         .animation(.default, value: dataLoader.state)
     }
-    
+
     private func moviesView(for movies: [Movie]) -> some View {
-        
+
         let recentlyWatched: [Movie] = movies
             .filter { !$0.isFavorite }
             .sorted(by: { $0.lastWatched > $1.lastWatched })
-        
+
         let favorites = movies.filter { $0.isFavorite }
-        
+
         return VStack(spacing: 30) {
-            
+
             if !recentlyWatched.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Recently watched")
@@ -61,7 +61,7 @@ struct MoviesView: View {
                     MoviesGridView(movies: recentlyWatched)
                 }
             }
-            
+
             if !favorites.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Favorites")
@@ -74,9 +74,9 @@ struct MoviesView: View {
 }
 
 struct MoviesGridView: View {
-    
+
     let movies: [Movie]
-    
+
     var body: some View {
         GridView {
             ForEach(movies) { movie in
@@ -93,11 +93,11 @@ struct MoviesGridView: View {
 }
 
 struct MoviesView_Previews: PreviewProvider {
-    
+
     struct Preview: View {
-        
+
         @StateObject private var dataLoader = NetworkDataLoader()
-        
+
         var body: some View {
             MoviesView()
                 .task {
@@ -107,7 +107,7 @@ struct MoviesView_Previews: PreviewProvider {
                 .environmentObject(dataLoader)
         }
     }
-    
+
     static var previews: some View {
         Preview()
     }

@@ -11,19 +11,19 @@ import DependencyInjection
 import Networking
 
 struct BooksView: View {
-    
+
     @EnvironmentObject var dataLoader: NetworkDataLoader
-    
+
     var body: some View {
         ZStack {
             switch dataLoader.state {
-                
+
             case .success(let response):
                 ScrollView {
                     booksView(for: response.books)
                         .padding()
                 }
-                
+
             case .loading:
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -34,7 +34,7 @@ struct BooksView: View {
                     .padding()
                     .redacted(reason: .placeholder)
                 }
-                
+
             case .failed(let error):
                 GenericErrorView(error: error.localizedDescription) {
                     await dataLoader.load()
@@ -43,22 +43,22 @@ struct BooksView: View {
         }
         .animation(.default, value: dataLoader.state)
     }
-    
+
     private func booksView(for books: [Book]) -> some View {
-        
+
         let reading: [Book] = books
             .filter { !$0.isFavorite }
             .filter { $0.reading }
-        
+
         let recentlyRead = books
             .filter { !$0.isFavorite }
             .filter { !$0.reading }
-        
+
         let favorites = books
             .filter { $0.isFavorite }
-        
+
         return VStack(spacing: 30) {
-            
+
             if !reading.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Reading")
@@ -66,7 +66,7 @@ struct BooksView: View {
                     BooksGridView(books: reading)
                 }
             }
-            
+
             if !recentlyRead.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Recently read")
@@ -74,7 +74,7 @@ struct BooksView: View {
                     BooksGridView(books: recentlyRead)
                 }
             }
-            
+
             if !favorites.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Favorites")
@@ -87,9 +87,9 @@ struct BooksView: View {
 }
 
 struct BooksGridView: View {
-    
+
     let books: [Book]
-    
+
     var body: some View {
         GridView {
             ForEach(books) { book in
@@ -106,11 +106,11 @@ struct BooksGridView: View {
 }
 
 struct BooksGridView_Previews: PreviewProvider {
-    
+
     struct Preview: View {
-        
+
         @StateObject private var dataLoader = NetworkDataLoader()
-        
+
         var body: some View {
             BooksView()
                 .task {
@@ -120,7 +120,7 @@ struct BooksGridView_Previews: PreviewProvider {
                 .environmentObject(dataLoader)
         }
     }
-    
+
     static var previews: some View {
         Preview()
     }

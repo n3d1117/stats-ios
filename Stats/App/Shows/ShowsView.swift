@@ -11,19 +11,19 @@ import DependencyInjection
 import Networking
 
 struct ShowsView: View {
-    
+
     @EnvironmentObject var dataLoader: NetworkDataLoader
-    
+
     var body: some View {
         ZStack {
             switch dataLoader.state {
-                
+
             case .success(let response):
                 ScrollView {
                     showsView(for: response.tvShows)
                         .padding()
                 }
-                
+
             case .loading:
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -34,7 +34,7 @@ struct ShowsView: View {
                     .padding()
                     .redacted(reason: .placeholder)
                 }
-                
+
             case .failed(let error):
                 GenericErrorView(error: error.localizedDescription) {
                     await dataLoader.load()
@@ -43,17 +43,17 @@ struct ShowsView: View {
         }
         .animation(.default, value: dataLoader.state)
     }
-    
+
     private func showsView(for shows: [TVShow]) -> some View {
-        
+
         let recentlyWatched: [TVShow] = shows
             .filter { !$0.isFavorite }
             .sorted(by: { $0.lastWatched > $1.lastWatched })
-        
+
         let favorites = shows.filter { $0.isFavorite }
-        
+
         return VStack(spacing: 30) {
-            
+
             if !recentlyWatched.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Recently watched")
@@ -61,7 +61,7 @@ struct ShowsView: View {
                     ShowsGridView(shows: recentlyWatched)
                 }
             }
-            
+
             if !favorites.isEmpty {
                 VStack(alignment: .leading) {
                     Text("Favorites")
@@ -74,9 +74,9 @@ struct ShowsView: View {
 }
 
 struct ShowsGridView: View {
-    
+
     let shows: [TVShow]
-    
+
     var body: some View {
         GridView {
             ForEach(shows) { show in
@@ -93,11 +93,11 @@ struct ShowsGridView: View {
 }
 
 struct ShowsView_Previews: PreviewProvider {
-    
+
     struct Preview: View {
-        
+
         @StateObject private var dataLoader = NetworkDataLoader()
-        
+
         var body: some View {
             ShowsView()
                 .task {
@@ -107,7 +107,7 @@ struct ShowsView_Previews: PreviewProvider {
                 .environmentObject(dataLoader)
         }
     }
-    
+
     static var previews: some View {
         Preview()
     }

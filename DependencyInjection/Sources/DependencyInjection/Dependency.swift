@@ -12,7 +12,7 @@ public struct Dependency<T> {
         get { DependencyValues[keyPath] }
         set { DependencyValues[keyPath] = newValue }
     }
-    
+
     public init(_ keyPath: WritableKeyPath<DependencyValues, T>) {
         self.keyPath = keyPath
     }

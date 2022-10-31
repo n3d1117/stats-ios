@@ -8,7 +8,7 @@
 import Foundation
 
 public enum API {
-    
+
    public static let baseUrl = URL(string: "https://edoardo.fyi")!
    public static let baseImageUrl: String = "\(baseUrl)/img/"
 

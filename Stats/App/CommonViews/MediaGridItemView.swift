@@ -35,7 +35,7 @@ struct MediaGridItemView: View {
             Text(title)
                 .font(.system(size: 14))
                 .lineLimit(1)
-            
+
             if let subtitle {
                 Text(subtitle)
                     .lineLimit(1)
@@ -49,7 +49,7 @@ struct MediaGridItemView: View {
 
 // MARK: - Mocks
 extension MediaGridItemView {
-    
+
     static let mock: Self = MediaGridItemView(
         title: "Title",
         subtitle: "Subtitle",
@@ -57,7 +57,7 @@ extension MediaGridItemView {
         aspectRatio: 0.7,
         circle: false
     )
-    
+
     static let mockRounded: Self = MediaGridItemView(
         title: "Artist Title",
         subtitle: nil,

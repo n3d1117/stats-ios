@@ -14,12 +14,12 @@ public protocol DependencyKey {
 
 public struct DependencyValues {
     private static var current = DependencyValues()
-    
+
     public static subscript<K>(key: K.Type) -> K.Value where K: DependencyKey {
         get { key.currentValue }
         set { key.currentValue = newValue }
     }
-    
+
     public static subscript<T>(_ keyPath: WritableKeyPath<DependencyValues, T>) -> T {
         get { current[keyPath: keyPath] }
         set { current[keyPath: keyPath] = newValue }
@@ -33,7 +33,7 @@ public struct Dependency<T> {
         get { DependencyValues[keyPath] }
         set { DependencyValues[keyPath] = newValue }
     }
-    
+
     public init(_ keyPath: WritableKeyPath<DependencyValues, T>) {
         self.keyPath = keyPath
     }

@@ -23,7 +23,7 @@ public struct TVShow: Codable, Identifiable, Equatable {
         case isFavorite = "is_favorite"
         case img = "img_webp"
     }
-    
+
     public init(id: String, title: String, lastWatched: Date, episode: String, isFavorite: Bool, img: String) {
         self.id = id
         self.title = title
