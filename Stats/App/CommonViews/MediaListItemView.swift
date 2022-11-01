@@ -7,8 +7,6 @@
 
 import SwiftUI
 import NukeUI
-import Models
-import Networking
 
 struct MediaListItemView: View {
     let title: String

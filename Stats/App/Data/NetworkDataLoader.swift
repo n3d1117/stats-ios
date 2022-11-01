@@ -8,7 +8,6 @@
 import Foundation
 import DependencyInjection
 import Models
-import Boutique
 
 @MainActor class NetworkDataLoader: ObservableObject {
 

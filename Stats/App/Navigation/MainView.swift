@@ -29,7 +29,7 @@ struct MainView: View {
                 NavigationView {
                     ZStack {
                         Color("bg_color").ignoresSafeArea()
-                        route.associatedView
+                        MediaView(mediaType: route)
                             .navigationTitle(route.label)
                             .toolbar {
                                 layoutButton

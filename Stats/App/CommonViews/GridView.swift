@@ -12,8 +12,7 @@ struct GridView<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     private var width: CGFloat { 80 }
-
-    var spacing: CGFloat { 20 }
+    private var spacing: CGFloat { 20 }
 
     var body: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: width), spacing: spacing, alignment: .top)], spacing: spacing) {

@@ -5,8 +5,6 @@
 //  Created by ned on 31/10/22.
 //
 
-import SwiftUI
-
 enum Route: Hashable, CaseIterable {
     case movies, tvShows, books, music, games
 
@@ -28,10 +26,5 @@ enum Route: Hashable, CaseIterable {
         case .music: return "music.mic"
         case .games: return "gamecontroller"
         }
-    }
-
-    @ViewBuilder
-    var associatedView: some View {
-        MediaView(mediaType: self)
     }
 }

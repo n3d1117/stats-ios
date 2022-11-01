@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import Models
-import DependencyInjection
 
 @main
 struct StatsApp: App {
