@@ -45,7 +45,7 @@ struct MainView: View {
         Button {
             layoutType = layoutType == .grid ? .list : .grid
         } label: {
-            Image(systemName: layoutType == .grid ? "square.grid.2x2" : "list.bullet")
+            Image(systemName: layoutType == .list ? "square.grid.2x2" : "list.bullet")
         }
         .disabled(!buttonsEnabled)
     }
