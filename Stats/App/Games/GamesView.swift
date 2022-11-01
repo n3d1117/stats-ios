@@ -24,6 +24,8 @@ struct GamesView: View {
                 ScrollView {
                     gamesView(for: response.games)
                         .padding()
+                }.refreshable {
+                    await dataLoader.load()
                 }
 
             case .loading:

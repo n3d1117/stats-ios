@@ -25,6 +25,8 @@ struct MoviesView: View {
                 ScrollView {
                     moviesView(for: response.movies)
                         .padding()
+                }.refreshable {
+                    await dataLoader.load()
                 }
 
             case .loading:

@@ -24,6 +24,8 @@ struct ShowsView: View {
                 ScrollView {
                     showsView(for: response.tvShows)
                         .padding()
+                }.refreshable {
+                    await dataLoader.load()
                 }
 
             case .loading:

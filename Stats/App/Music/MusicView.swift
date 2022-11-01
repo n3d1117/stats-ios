@@ -24,6 +24,8 @@ struct MusicView: View {
                 ScrollView {
                     artistsView(for: response.artists)
                         .padding()
+                }.refreshable {
+                    await dataLoader.load()
                 }
 
             case .loading:

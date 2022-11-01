@@ -24,6 +24,8 @@ struct BooksView: View {
                 ScrollView {
                     booksView(for: response.books)
                         .padding()
+                }.refreshable {
+                    await dataLoader.load()
                 }
 
             case .loading:
