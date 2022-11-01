@@ -23,6 +23,7 @@
 		8143B2FC291038CD00BB571E /* Game+Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8143B2FB291038CD00BB571E /* Game+Mocks.swift */; };
 		8143B305291043D400BB571E /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8143B304291043D400BB571E /* StatsView.swift */; };
 		817B0B8B291122B60088548D /* PreviewWithMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817B0B8A291122B60088548D /* PreviewWithMock.swift */; };
+		81C2A88A291185CE009EF53A /* MediaContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C2A889291185CE009EF53A /* MediaContentView.swift */; };
 		81CEDBF429112EFA00C5EFE6 /* MediaListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDBF329112EFA00C5EFE6 /* MediaListItemView.swift */; };
 		81CEDBFA291141CA00C5EFE6 /* Boutique in Frameworks */ = {isa = PBXBuildFile; productRef = 81CEDBF9291141CA00C5EFE6 /* Boutique */; };
 		81CEDBFC29114CC100C5EFE6 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDBFB29114CC100C5EFE6 /* MediaView.swift */; };
@@ -68,6 +69,7 @@
 		8143B2FB291038CD00BB571E /* Game+Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Game+Mocks.swift"; sourceTree = "<group>"; };
 		8143B304291043D400BB571E /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		817B0B8A291122B60088548D /* PreviewWithMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewWithMock.swift; sourceTree = "<group>"; };
+		81C2A889291185CE009EF53A /* MediaContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaContentView.swift; sourceTree = "<group>"; };
 		81CEDBF329112EFA00C5EFE6 /* MediaListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListItemView.swift; sourceTree = "<group>"; };
 		81CEDBFB29114CC100C5EFE6 /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		81CEDBFD2911547700C5EFE6 /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				81CEDBFB29114CC100C5EFE6 /* MediaView.swift */,
+				81C2A889291185CE009EF53A /* MediaContentView.swift */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -432,6 +435,7 @@
 				8143B2C5291010F800BB571E /* Route.swift in Sources */,
 				8143B2C72910112300BB571E /* MainView.swift in Sources */,
 				81CEDC00291156EC00C5EFE6 /* NetworkService+Mock.swift in Sources */,
+				81C2A88A291185CE009EF53A /* MediaContentView.swift in Sources */,
 				81DEEDA5290FE22700106BC6 /* StatsApp.swift in Sources */,
 				8143B2CD2910158900BB571E /* NetworkDataLoader.swift in Sources */,
 				8143B2DA291024FD00BB571E /* MediaGridItemView.swift in Sources */,

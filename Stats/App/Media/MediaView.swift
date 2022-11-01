@@ -7,7 +7,6 @@
 
 import DependencyInjection
 import Models
-import Networking
 import SwiftUI
 
 struct MediaView: View {
@@ -146,44 +145,6 @@ struct MediaView: View {
             Text(title)
                 .font(.system(size: 20, weight: .semibold, design: .rounded))
             MediaContentView(media: media)
-        }
-    }
-}
-
-struct MediaContentView: View {
-
-    let media: [any Media]
-
-    @Environment(\.layoutType) var layoutType
-
-    var body: some View {
-        ZStack {
-            switch layoutType {
-            case .grid:
-                GridView {
-                    ForEach(media, id: \.id) { item in
-                        MediaGridItemView(
-                            title: item.title,
-                            subtitle: item.subtitle,
-                            imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded),
-                            aspectRatio: item.aspectRatio,
-                            circle: item.circle
-                        )
-                    }
-                }
-            case .list:
-                LazyVStack {
-                    ForEach(media, id: \.id) { item in
-                        MediaListItemView(
-                            title: item.title,
-                            subtitle: item.subtitle,
-                            imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded),
-                            aspectRatio: item.aspectRatio,
-                            circle: item.circle
-                        )
-                    }
-                }
-            }
         }
     }
 }
