@@ -24,6 +24,7 @@
 		8143B305291043D400BB571E /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8143B304291043D400BB571E /* StatsView.swift */; };
 		817B0B8B291122B60088548D /* PreviewWithMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817B0B8A291122B60088548D /* PreviewWithMock.swift */; };
 		81C2A88A291185CE009EF53A /* MediaContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C2A889291185CE009EF53A /* MediaContentView.swift */; };
+		81C2A88C29119434009EF53A /* Boutique in Frameworks */ = {isa = PBXBuildFile; productRef = 81C2A88B29119434009EF53A /* Boutique */; };
 		81CEDBF429112EFA00C5EFE6 /* MediaListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDBF329112EFA00C5EFE6 /* MediaListItemView.swift */; };
 		81CEDBFA291141CA00C5EFE6 /* Boutique in Frameworks */ = {isa = PBXBuildFile; productRef = 81CEDBF9291141CA00C5EFE6 /* Boutique */; };
 		81CEDBFC29114CC100C5EFE6 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDBFB29114CC100C5EFE6 /* MediaView.swift */; };
@@ -31,7 +32,6 @@
 		81CEDC00291156EC00C5EFE6 /* NetworkService+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDBFF291156EB00C5EFE6 /* NetworkService+Mock.swift */; };
 		81CEDC022911571F00C5EFE6 /* PersistentService+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC012911571F00C5EFE6 /* PersistentService+Mock.swift */; };
 		81CEDC07291157A600C5EFE6 /* MediaContentViewMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC06291157A600C5EFE6 /* MediaContentViewMock.swift */; };
-		81CEDC092911702700C5EFE6 /* Boutique in Frameworks */ = {isa = PBXBuildFile; productRef = 81CEDC082911702700C5EFE6 /* Boutique */; };
 		81CEDC0B291173DD00C5EFE6 /* PersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC0A291173DD00C5EFE6 /* PersistenceServiceTests.swift */; };
 		81CEDC0D2911767500C5EFE6 /* LayoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC0C2911767400C5EFE6 /* LayoutType.swift */; };
 		81DEEDA5290FE22700106BC6 /* StatsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEEDA4290FE22700106BC6 /* StatsApp.swift */; };
@@ -106,7 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81CEDC092911702700C5EFE6 /* Boutique in Frameworks */,
+				81C2A88C29119434009EF53A /* Boutique in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,7 +323,7 @@
 			);
 			name = StatsTests;
 			packageProductDependencies = (
-				81CEDC082911702700C5EFE6 /* Boutique */,
+				81C2A88B29119434009EF53A /* Boutique */,
 			);
 			productName = StatsTests;
 			productReference = 81DEEDB1290FE22800106BC6 /* StatsTests.xctest */;
@@ -392,8 +392,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		8143B30229103F7D00BB571E /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 12;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -405,7 +404,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint >/dev/null; then\n    swiftlint --fix && swiftlint\nelse\n    echo \"swiftlint not installed\"\nfi\n";
 		};
@@ -733,12 +732,12 @@
 			package = 8143B2D32910230000BB571E /* XCRemoteSwiftPackageReference "Nuke" */;
 			productName = NukeUI;
 		};
-		81CEDBF9291141CA00C5EFE6 /* Boutique */ = {
+		81C2A88B29119434009EF53A /* Boutique */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 81CEDBF8291141CA00C5EFE6 /* XCRemoteSwiftPackageReference "Boutique" */;
 			productName = Boutique;
 		};
-		81CEDC082911702700C5EFE6 /* Boutique */ = {
+		81CEDBF9291141CA00C5EFE6 /* Boutique */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 81CEDBF8291141CA00C5EFE6 /* XCRemoteSwiftPackageReference "Boutique" */;
 			productName = Boutique;

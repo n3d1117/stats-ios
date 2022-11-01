@@ -14,6 +14,7 @@ public extension TVShow {
         title: "Boris",
         lastWatched: Date(),
         episode: "S1E1",
+        episodes: [],
         isFavorite: false,
         img: "boris.webp"
     )

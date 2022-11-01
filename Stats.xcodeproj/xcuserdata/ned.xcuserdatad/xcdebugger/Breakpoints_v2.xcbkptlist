@@ -3,4 +3,54 @@
    uuid = "9429CFF9-4AEC-4DE1-9D5B-04C3E285FF9A"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0AB814DD-017D-4FB4-A727-E8E37FE00FA3"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Stats/App/Data/NetworkDataLoader.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
+            landmarkName = "load()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "0AB814DD-017D-4FB4-A727-E8E37FE00FA3 - 8a5101704c48b83a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for Stats.NetworkDataLoader.load() async -&gt; ()"
+                  moduleName = "Stats"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ned/Developer/Stats/Stats/App/Data/NetworkDataLoader.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "352">
+               </Location>
+               <Location
+                  uuid = "0AB814DD-017D-4FB4-A727-E8E37FE00FA3 - 83a642cb03ac4835"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for Stats.NetworkDataLoader.load() async -&gt; ()"
+                  moduleName = "Stats"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ned/Developer/Stats/Stats/App/Data/NetworkDataLoader.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "372">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
