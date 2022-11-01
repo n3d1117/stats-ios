@@ -8,13 +8,20 @@
 import SwiftUI
 import DependencyInjection
 
+enum LayoutType: String {
+    case grid
+    case list
+    
+    static let storageKey: String = "layoutType"
+}
+
 struct MainView: View {
 
     @StateObject private var dataLoader = NetworkDataLoader()
 
     @State private var showCharts = false
 
-    @AppStorage("listLayout") private var listLayout = false
+    @AppStorage(LayoutType.storageKey) private var layoutType: LayoutType = .grid
 
     var body: some View {
         TabView {
@@ -35,7 +42,7 @@ struct MainView: View {
             }
         }
         .environmentObject(dataLoader)
-        .environment(\.listLayout, listLayout)
+        .environment(\.layoutType, layoutType)
         .task {
             await dataLoader.load()
         }
@@ -43,9 +50,9 @@ struct MainView: View {
     
     private var layoutButton: some View {
         Button {
-            listLayout.toggle()
+            layoutType = layoutType == .grid ? .list : .grid
         } label: {
-            Image(systemName: listLayout ? "square.grid.2x2" : "list.bullet")
+            Image(systemName: layoutType == .grid ? "square.grid.2x2" : "list.bullet")
         }
         .disabled(!buttonsEnabled)
     }
@@ -75,20 +82,21 @@ struct MainView: View {
 }
 
 private struct LayoutSwitchKey: EnvironmentKey {
-  static let defaultValue = false
+    static let defaultValue: LayoutType = .grid
 }
 
 extension EnvironmentValues {
-  var listLayout: Bool {
-    get { self[LayoutSwitchKey.self] }
-    set { self[LayoutSwitchKey.self] = newValue }
-  }
+    var layoutType: LayoutType {
+        get { self[LayoutSwitchKey.self] }
+        set { self[LayoutSwitchKey.self] = newValue }
+    }
 }
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWithMock(MainView()) {
             DependencyValues[\.networkService] = .mock(movies: [.inception], wait: true)
+            DependencyValues[\.persistenceService] = .mock
         }
     }
 }

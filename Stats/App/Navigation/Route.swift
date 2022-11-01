@@ -32,12 +32,6 @@ enum Route: Hashable, CaseIterable {
 
     @ViewBuilder
     var associatedView: some View {
-        switch self {
-        case .movies: MoviesView()
-        case .tvShows: ShowsView()
-        case .books: BooksView()
-        case .music: MusicView()
-        case .games: GamesView()
-        }
+        MediaView(mediaType: self)
     }
 }

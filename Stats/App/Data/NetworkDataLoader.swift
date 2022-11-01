@@ -11,11 +11,10 @@ import Models
 import Boutique
 
 @MainActor class NetworkDataLoader: ObservableObject {
-    @Dependency(\.networkService) private var networkService
     
-    @AsyncStoredValue<APIResponse>(storage: SQLiteStorageEngine.default(appendingPath: "cachedResponse"))
-    var cachedResponse: APIResponse = .empty
-
+    @Dependency(\.networkService) private var networkService
+    @Dependency(\.persistenceService) private var persistenceService
+    
     @Published private(set) var state: State = .loading
 
     enum State {
@@ -25,21 +24,22 @@ import Boutique
     }
 
     func load() async {
-        if cachedResponse != .empty {
-            state = .success(cachedResponse)
+        if persistenceService.persistedResponse != .empty {
+            state = .success(persistenceService.persistedResponse)
         }
         do {
             let response = try await networkService.loadData()
             state = .success(response)
-            try await $cachedResponse.set(response)
+            try await persistenceService.set(response)
         } catch {
-            if cachedResponse == .empty {
+            if persistenceService.persistedResponse == .empty {
                 state = .failed(error)
             }
         }
     }
 }
 
+// MARK: - Equatable conformance
 extension NetworkDataLoader.State: Equatable {
     static func == (lhs: NetworkDataLoader.State, rhs: NetworkDataLoader.State) -> Bool {
         switch (lhs, rhs) {
