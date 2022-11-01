@@ -1,11 +1,19 @@
 opt_in_rules:
-  - convenience_type
   - empty_count
-  - empty_string
-  - fatal_error_message
+  - file_header
+  - explicit_init
+  - closure_spacing
+  - redundant_nil_coalescing
+  - private_outlet
+  - nimble_operator
+  - attributes
+  - operator_usage_whitespace
+  - closure_end_indentation
   - first_where
-  - modifier_order
-  - prohibited_interface_builder
-  - toggle_bool
+  - sorted_imports
+  - object_literal
+  - number_separator
+  - prohibited_super_call
+  - fatal_error_message
 
 reporter: "xcode"

@@ -5,10 +5,10 @@
 //  Created by ned on 01/11/22.
 //
 
-import SwiftUI
+import DependencyInjection
 import Models
 import Networking
-import DependencyInjection
+import SwiftUI
 
 struct MediaView: View {
 

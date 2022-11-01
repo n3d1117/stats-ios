@@ -5,9 +5,9 @@
 //  Created by ned on 31/10/22.
 //
 
-import Networking
-import Models
 import DependencyInjection
+import Models
+import Networking
 
 class NetworkService {
     private let apiService: APIService = APIService()

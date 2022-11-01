@@ -6,8 +6,8 @@
 //
 
 import Boutique
-import Models
 import DependencyInjection
+import Models
 
 class PersistenceService {
 

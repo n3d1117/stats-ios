@@ -5,8 +5,8 @@
 //  Created by ned on 31/10/22.
 //
 
-import XCTest
 @testable import Stats
+import XCTest
 
 final class StatsTests: XCTestCase {
 

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Error.swift
 //  
 //
 //  Created by ned on 31/10/22.

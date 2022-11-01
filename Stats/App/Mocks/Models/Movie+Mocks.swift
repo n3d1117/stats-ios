@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Movie+Mocks.swift
 //  
 //
 //  Created by ned on 31/10/22.
@@ -16,7 +16,7 @@ public extension Movie {
         isFavorite: true,
         isCinema: false,
         img: "inception.webp",
-        year: 2010
+        year: 2_010
     )
 
     static let donnieDarko: Self = .init(
@@ -26,7 +26,7 @@ public extension Movie {
         isFavorite: true,
         isCinema: false,
         img: "donnie_darko.webp",
-        year: 2001
+        year: 2_001
     )
 
     static let blonde: Self = .init(
@@ -36,7 +36,7 @@ public extension Movie {
         isFavorite: false,
         isCinema: false,
         img: "blonde.webp",
-        year: 2022
+        year: 2_022
     )
 
     static let uncharted: Self = .init(
@@ -46,6 +46,6 @@ public extension Movie {
         isFavorite: false,
         isCinema: true,
         img: "uncharted.webp",
-        year: 2022
+        year: 2_022
     )
 }

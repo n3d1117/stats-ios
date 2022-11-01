@@ -5,8 +5,8 @@
 //  Created by ned on 01/11/22.
 //
 
-import SwiftUI
 import NukeUI
+import SwiftUI
 
 struct MediaListItemView: View {
     let title: String
