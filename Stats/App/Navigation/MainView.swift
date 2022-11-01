@@ -8,13 +8,6 @@
 import DependencyInjection
 import SwiftUI
 
-enum LayoutType: String {
-    case grid
-    case list
-
-    static let storageKey: String = "layoutType"
-}
-
 struct MainView: View {
 
     @StateObject private var dataLoader = NetworkDataLoader()
@@ -78,17 +71,6 @@ struct MainView: View {
         case .success: return true
         default: return false
         }
-    }
-}
-
-private struct LayoutSwitchKey: EnvironmentKey {
-    static let defaultValue: LayoutType = .grid
-}
-
-extension EnvironmentValues {
-    var layoutType: LayoutType {
-        get { self[LayoutSwitchKey.self] }
-        set { self[LayoutSwitchKey.self] = newValue }
     }
 }
 

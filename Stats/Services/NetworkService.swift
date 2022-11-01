@@ -10,7 +10,11 @@ import Models
 import Networking
 
 class NetworkService {
-    private let apiService: APIService = APIService()
+    private let apiService: APIService
+
+    init(apiService: APIService = .init()) {
+        self.apiService = apiService
+    }
 
     func loadData() async throws -> APIResponse {
         try await apiService.request(.GET, .data)
