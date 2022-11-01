@@ -16,7 +16,7 @@ struct MediaListItemView: View {
     let imageURL: URL?
     let aspectRatio: CGFloat
     let circle: Bool
-    
+
     var body: some View {
         HStack {
             LazyImage(url: imageURL) { state in
@@ -32,7 +32,7 @@ struct MediaListItemView: View {
             .frame(height: 60)
             .if(circle, transform: { $0.clipShape(Circle()) })
             .if(!circle, transform: { $0.clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous)) })
-            
+
             VStack(alignment: .leading, spacing: 7) {
                 Text(title)
                     .font(.system(size: 15))

@@ -11,10 +11,10 @@ import Models
 import Boutique
 
 @MainActor class NetworkDataLoader: ObservableObject {
-    
+
     @Dependency(\.networkService) private var networkService
     @Dependency(\.persistenceService) private var persistenceService
-    
+
     @Published private(set) var state: State = .loading
 
     enum State {

@@ -11,10 +11,10 @@ import Models
 import DependencyInjection
 
 class PersistenceService {
-    
+
     @StoredValue<APIResponse>(key: "cachedResponse")
     var persistedResponse: APIResponse = .empty
-    
+
     func set(_ response: APIResponse) async throws {
         $persistedResponse.set(response)
     }

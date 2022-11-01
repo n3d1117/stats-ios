@@ -11,11 +11,11 @@ import Networking
 import DependencyInjection
 
 struct MediaView: View {
-    
+
     let mediaType: Route
-    
+
     @EnvironmentObject var dataLoader: NetworkDataLoader
-    
+
     @Environment(\.layoutType) var layoutType
 
     var body: some View {
@@ -35,7 +35,7 @@ struct MediaView: View {
                     }
                     .padding()
                     .animation(.default, value: layoutType)
-                    
+
                 }.refreshable {
                     await dataLoader.load()
                 }
@@ -65,48 +65,48 @@ struct MediaView: View {
         }
         .animation(.default, value: dataLoader.state)
     }
-    
+
     @ViewBuilder
     private func moviesView(_ movies: [Movie]) -> some View {
-        
+
         let recentlyWatched: [Movie] = movies
             .filter { !$0.isFavorite }
             .sorted(by: { $0.lastWatched > $1.lastWatched })
-        
+
         let favorites: [Movie] = movies
             .filter { $0.isFavorite }
-        
+
         if !recentlyWatched.isEmpty {
             section(title: "Recently watched", media: recentlyWatched)
         }
-        
+
         if !favorites.isEmpty {
             section(title: "Favorites", media: favorites)
         }
     }
-    
+
     @ViewBuilder
     private func showsView(_ shows: [TVShow]) -> some View {
-        
+
         let recentlyWatched: [TVShow] = shows
             .filter { !$0.isFavorite }
             .sorted(by: { $0.lastWatched > $1.lastWatched })
 
         let favorites = shows
             .filter { $0.isFavorite }
-        
+
         if !recentlyWatched.isEmpty {
             section(title: "Recently watched", media: recentlyWatched)
         }
-        
+
         if !favorites.isEmpty {
             section(title: "Favorites", media: favorites)
         }
     }
-    
+
     @ViewBuilder
     private func booksView(_ books: [Book]) -> some View {
-        
+
         let reading: [Book] = books
             .filter { !$0.isFavorite }
             .filter { $0.reading }
@@ -117,30 +117,30 @@ struct MediaView: View {
 
         let favorites = books
             .filter { $0.isFavorite }
-        
+
         if !reading.isEmpty {
             section(title: "Reading", media: reading)
         }
-        
+
         if !recentlyRead.isEmpty {
             section(title: "Recently read", media: recentlyRead)
         }
-        
+
         if !favorites.isEmpty {
             section(title: "Favorites", media: favorites)
         }
     }
-    
+
     @ViewBuilder
     private func artistsView(_ artists: [Artist]) -> some View {
         section(title: "Music I'm listening to", media: artists)
     }
-    
+
     @ViewBuilder
     private func gamesView(_ games: [Game]) -> some View {
         section(title: "Recently played", media: games)
     }
-    
+
     private func section(title: String, media: [any Media]) -> some View {
         VStack(alignment: .leading) {
             Text(title)
@@ -153,7 +153,7 @@ struct MediaView: View {
 struct MediaContentView: View {
 
     let media: [any Media]
-    
+
     @Environment(\.layoutType) var layoutType
 
     var body: some View {

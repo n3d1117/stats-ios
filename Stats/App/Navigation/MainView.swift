@@ -11,7 +11,7 @@ import DependencyInjection
 enum LayoutType: String {
     case grid
     case list
-    
+
     static let storageKey: String = "layoutType"
 }
 
@@ -47,7 +47,7 @@ struct MainView: View {
             await dataLoader.load()
         }
     }
-    
+
     private var layoutButton: some View {
         Button {
             layoutType = layoutType == .grid ? .list : .grid
@@ -56,7 +56,7 @@ struct MainView: View {
         }
         .disabled(!buttonsEnabled)
     }
-    
+
     private var chartsButton: some View {
         Button {
             showCharts.toggle()
@@ -72,10 +72,10 @@ struct MainView: View {
             }
         }
     }
-    
+
     private var buttonsEnabled: Bool {
         switch dataLoader.state {
-        case .success(_): return true
+        case .success: return true
         default: return false
         }
     }
