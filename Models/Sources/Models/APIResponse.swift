@@ -37,3 +37,7 @@ extension APIResponse: Equatable {
         lhs.games == rhs.games
     }
 }
+
+extension APIResponse {
+    public static let empty: Self = .init(movies: [], tvShows: [], books: [], artists: [], games: [])
+}

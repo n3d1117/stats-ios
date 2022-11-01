@@ -8,9 +8,13 @@
 import Foundation
 import DependencyInjection
 import Models
+import Boutique
 
 @MainActor class NetworkDataLoader: ObservableObject {
     @Dependency(\.networkService) private var networkService
+    
+    @AsyncStoredValue<APIResponse>(storage: SQLiteStorageEngine.default(appendingPath: "cachedResponse"))
+    var cachedResponse: APIResponse = .empty
 
     @Published private(set) var state: State = .loading
 
@@ -21,11 +25,17 @@ import Models
     }
 
     func load() async {
+        if cachedResponse != .empty {
+            state = .success(cachedResponse)
+        }
         do {
             let response = try await networkService.loadData()
             state = .success(response)
+            try await $cachedResponse.set(response)
         } catch {
-            state = .failed(error)
+            if cachedResponse == .empty {
+                state = .failed(error)
+            }
         }
     }
 }
