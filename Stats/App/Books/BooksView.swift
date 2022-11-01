@@ -13,6 +13,8 @@ import Networking
 struct BooksView: View {
 
     @EnvironmentObject var dataLoader: NetworkDataLoader
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
         ZStack {
@@ -29,7 +31,11 @@ struct BooksView: View {
                     VStack(alignment: .leading) {
                         Text("Dummy header")
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
-                        MoviesGridViewMock()
+                        if listLayout {
+                            MoviesListViewMock()
+                        } else {
+                            MoviesGridViewMock()
+                        }
                     }
                     .padding()
                     .redacted(reason: .placeholder)
@@ -82,24 +88,42 @@ struct BooksView: View {
                     BooksGridView(books: favorites)
                 }
             }
-        }
+        }.animation(.default, value: listLayout)
     }
 }
 
 struct BooksGridView: View {
 
     let books: [Book]
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
-        GridView {
-            ForEach(books) { book in
-                MediaGridItemView(
-                    title: book.title,
-                    subtitle: String(book.author),
-                    imageURL: URL(string: (API.baseImageUrl + book.img).urlEncoded),
-                    aspectRatio: 0.7,
-                    circle: false
-                )
+        ZStack {
+            if !listLayout {
+                GridView {
+                    ForEach(books) { book in
+                        MediaGridItemView(
+                            title: book.title,
+                            subtitle: String(book.author),
+                            imageURL: URL(string: (API.baseImageUrl + book.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
+            } else {
+                LazyVStack {
+                    ForEach(books) { book in
+                        MediaListItemView(
+                            title: book.title,
+                            subtitle: String(book.author),
+                            imageURL: URL(string: (API.baseImageUrl + book.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
             }
         }
     }

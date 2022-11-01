@@ -13,6 +13,8 @@ import Networking
 struct MusicView: View {
 
     @EnvironmentObject var dataLoader: NetworkDataLoader
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
         ZStack {
@@ -29,7 +31,11 @@ struct MusicView: View {
                     VStack(alignment: .leading) {
                         Text("Dummy header")
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
-                        ArtistsGridViewMock()
+                        if listLayout {
+                            ArtistsListViewMock()
+                        } else {
+                            ArtistsGridViewMock()
+                        }
                     }
                     .padding()
                     .redacted(reason: .placeholder)
@@ -49,24 +55,42 @@ struct MusicView: View {
             Text("Music I'm listening to")
                 .font(.system(size: 20, weight: .semibold, design: .rounded))
             ArtistsGridView(artists: artists)
-        }
+        }.animation(.default, value: listLayout)
     }
 }
 
 struct ArtistsGridView: View {
 
     let artists: [Artist]
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
-        GridView {
-            ForEach(artists) { artist in
-                MediaGridItemView(
-                    title: artist.name,
-                    subtitle: nil,
-                    imageURL: URL(string: (API.baseImageUrl + artist.img).urlEncoded),
-                    aspectRatio: 1,
-                    circle: true
-                )
+        ZStack {
+            if !listLayout {
+                GridView {
+                    ForEach(artists) { artist in
+                        MediaGridItemView(
+                            title: artist.name,
+                            subtitle: nil,
+                            imageURL: URL(string: (API.baseImageUrl + artist.img).urlEncoded),
+                            aspectRatio: 1,
+                            circle: true
+                        )
+                    }
+                }
+            } else {
+                LazyVStack {
+                    ForEach(artists) { artist in
+                        MediaListItemView(
+                            title: artist.name,
+                            subtitle: nil,
+                            imageURL: URL(string: (API.baseImageUrl + artist.img).urlEncoded),
+                            aspectRatio: 1,
+                            circle: true
+                        )
+                    }
+                }
             }
         }
     }
@@ -98,6 +122,16 @@ struct ArtistsGridViewMock: View {
         GridView {
             ForEach(0..<30, id: \.self) { _ in
                 MediaGridItemView.mockRounded
+            }
+        }
+    }
+}
+
+struct ArtistsListViewMock: View {
+    var body: some View {
+        GridView {
+            ForEach(0..<30, id: \.self) { _ in
+                MediaListItemView.mockRounded
             }
         }
     }

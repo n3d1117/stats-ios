@@ -13,6 +13,8 @@ import Networking
 struct ShowsView: View {
 
     @EnvironmentObject var dataLoader: NetworkDataLoader
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
         ZStack {
@@ -29,7 +31,11 @@ struct ShowsView: View {
                     VStack(alignment: .leading) {
                         Text("Dummy header")
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
-                        MoviesGridViewMock()
+                        if listLayout {
+                            MoviesListViewMock()
+                        } else {
+                            MoviesGridViewMock()
+                        }
                     }
                     .padding()
                     .redacted(reason: .placeholder)
@@ -69,24 +75,42 @@ struct ShowsView: View {
                     ShowsGridView(shows: favorites)
                 }
             }
-        }
+        }.animation(.default, value: listLayout)
     }
 }
 
 struct ShowsGridView: View {
 
     let shows: [TVShow]
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
-        GridView {
-            ForEach(shows) { show in
-                MediaGridItemView(
-                    title: show.title,
-                    subtitle: String(show.episode),
-                    imageURL: URL(string: (API.baseImageUrl + show.img).urlEncoded),
-                    aspectRatio: 0.7,
-                    circle: false
-                )
+        ZStack {
+            if !listLayout {
+                GridView {
+                    ForEach(shows) { show in
+                        MediaGridItemView(
+                            title: show.title,
+                            subtitle: String(show.episode),
+                            imageURL: URL(string: (API.baseImageUrl + show.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
+            } else {
+                LazyVStack {
+                    ForEach(shows) { show in
+                        MediaListItemView(
+                            title: show.title,
+                            subtitle: String(show.episode),
+                            imageURL: URL(string: (API.baseImageUrl + show.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
             }
         }
     }

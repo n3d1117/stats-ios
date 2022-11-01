@@ -13,6 +13,8 @@ import Networking
 struct GamesView: View {
 
     @EnvironmentObject var dataLoader: NetworkDataLoader
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
         ZStack {
@@ -29,7 +31,11 @@ struct GamesView: View {
                     VStack(alignment: .leading) {
                         Text("Dummy header")
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
-                        MoviesGridViewMock()
+                        if listLayout {
+                            MoviesListViewMock()
+                        } else {
+                            MoviesGridViewMock()
+                        }
                     }
                     .padding()
                     .redacted(reason: .placeholder)
@@ -49,24 +55,42 @@ struct GamesView: View {
             Text("Recently played")
                 .font(.system(size: 20, weight: .semibold, design: .rounded))
             GamesGridView(games: games.sorted(by: { $0.year > $1.year }))
-        }
+        }.animation(.default, value: listLayout)
     }
 }
 
 struct GamesGridView: View {
 
     let games: [Game]
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
-        GridView {
-            ForEach(games) { game in
-                MediaGridItemView(
-                    title: game.name,
-                    subtitle: String(game.year),
-                    imageURL: URL(string: (API.baseImageUrl + game.img).urlEncoded),
-                    aspectRatio: 0.7,
-                    circle: false
-                )
+        ZStack {
+            if !listLayout {
+                GridView {
+                    ForEach(games) { game in
+                        MediaGridItemView(
+                            title: game.name,
+                            subtitle: String(game.year),
+                            imageURL: URL(string: (API.baseImageUrl + game.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
+            } else {
+                LazyVStack {
+                    ForEach(games) { game in
+                        MediaListItemView(
+                            title: game.name,
+                            subtitle: String(game.year),
+                            imageURL: URL(string: (API.baseImageUrl + game.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
             }
         }
     }

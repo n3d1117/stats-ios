@@ -9,10 +9,13 @@ import SwiftUI
 import Models
 import DependencyInjection
 import Networking
+import NukeUI
 
 struct MoviesView: View {
 
     @EnvironmentObject var dataLoader: NetworkDataLoader
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
         ZStack {
@@ -29,7 +32,11 @@ struct MoviesView: View {
                     VStack(alignment: .leading) {
                         Text("Dummy header")
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
-                        MoviesGridViewMock()
+                        if listLayout {
+                            MoviesListViewMock()
+                        } else {
+                            MoviesGridViewMock()
+                        }
                     }
                     .padding()
                     .redacted(reason: .placeholder)
@@ -69,24 +76,42 @@ struct MoviesView: View {
                     MoviesGridView(movies: favorites)
                 }
             }
-        }
+        }.animation(.default, value: listLayout)
     }
 }
 
 struct MoviesGridView: View {
 
     let movies: [Movie]
+    
+    @Environment(\.listLayout) var listLayout
 
     var body: some View {
-        GridView {
-            ForEach(movies) { movie in
-                MediaGridItemView(
-                    title: movie.title,
-                    subtitle: String(movie.year) + (movie.isCinema ? " 🎬" : ""),
-                    imageURL: URL(string: (API.baseImageUrl + movie.img).urlEncoded),
-                    aspectRatio: 0.7,
-                    circle: false
-                )
+        ZStack {
+            if !listLayout {
+                GridView {
+                    ForEach(movies) { movie in
+                        MediaGridItemView(
+                            title: movie.title,
+                            subtitle: String(movie.year) + (movie.isCinema ? " 🎬" : ""),
+                            imageURL: URL(string: (API.baseImageUrl + movie.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
+            } else {
+                LazyVStack {
+                    ForEach(movies) { movie in
+                        MediaListItemView(
+                            title: movie.title,
+                            subtitle: String(movie.year) + (movie.isCinema ? " 🎬" : ""),
+                            imageURL: URL(string: (API.baseImageUrl + movie.img).urlEncoded),
+                            aspectRatio: 0.7,
+                            circle: false
+                        )
+                    }
+                }
             }
         }
     }
@@ -105,6 +130,7 @@ struct MoviesView_Previews: PreviewProvider {
                     await dataLoader.load()
                 }
                 .environmentObject(dataLoader)
+                .environment(\.listLayout, true)
         }
     }
 
@@ -118,6 +144,16 @@ struct MoviesGridViewMock: View {
         GridView {
             ForEach(0..<30, id: \.self) { _ in
                 MediaGridItemView.mock
+            }
+        }
+    }
+}
+
+struct MoviesListViewMock: View {
+    var body: some View {
+        VStack {
+            ForEach(0..<30, id: \.self) { _ in
+                MediaListItemView.mock
             }
         }
     }

@@ -20,15 +20,13 @@ struct MediaGridItemView: View {
             LazyImage(url: imageURL) { state in
                 if let image = state.image {
                     image
-                        .aspectRatio(aspectRatio, contentMode: .fill)
                 } else {
                     Image(systemName: "photo")
                         .resizable()
-                        .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
-                        .aspectRatio(aspectRatio, contentMode: .fill)
                         .redacted(reason: .placeholder)
                 }
             }
+            .aspectRatio(aspectRatio, contentMode: .fill)
             .if(circle, transform: { $0.clipShape(Circle()) })
             .if(!circle, transform: { $0.clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous)) })
 
