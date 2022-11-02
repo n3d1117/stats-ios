@@ -12,26 +12,33 @@ struct MainView: View {
 
     @StateObject private var dataLoader = NetworkDataLoader()
 
+    @State private var selectedRoute: Route = .movies
     @State private var showCharts = false
 
-    @AppStorage(LayoutType.storageKey) private var layoutType: LayoutType = .grid
+    @AppStorage(MediaLayoutType.storageKey) private var layoutType: MediaLayoutType = .grid
 
     var body: some View {
-        TabView {
-            ForEach(Route.allCases, id: \.hashValue) { route in
-                NavigationView {
-                    ZStack {
-                        Color("bg_color").ignoresSafeArea()
-                        MediaView(mediaType: route)
-                            .navigationTitle(route.label)
-                            .toolbar {
-                                layoutButton
-                                chartsButton
+        NavigationStack {
+            ZStack {
+                Color("bg_color").ignoresSafeArea()
+                MediaView(mediaType: selectedRoute)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationTitle(selectedRoute.label)
+                    .toolbarTitleMenu {
+                        ForEach(Route.allCases, id: \.hashValue) { route in
+                            let toggleBinding = Binding<Bool>(
+                                get: { selectedRoute == route },
+                                set: { _ in selectedRoute = route }
+                            )
+                            Toggle(isOn: toggleBinding) {
+                                Label(route.label, systemImage: route.image)
                             }
+                        }
                     }
-                }.tabItem {
-                    Label(route.label, systemImage: route.image)
-                }
+                    .toolbar {
+                        layoutButton
+                        chartsButton
+                    }
             }
         }
         .environmentObject(dataLoader)
@@ -58,10 +65,13 @@ struct MainView: View {
         }
         .disabled(!buttonsEnabled)
         .sheet(isPresented: $showCharts) {
-            ZStack {
-                Color("bg_color").ignoresSafeArea()
-                StatsView()
-                    .environmentObject(dataLoader)
+            NavigationStack {
+                ZStack {
+                    Color("bg_color").ignoresSafeArea()
+                    StatsView()
+                        .navigationTitle("Stats")
+                        .environmentObject(dataLoader)
+                }
             }
         }
     }
@@ -77,7 +87,7 @@ struct MainView: View {
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWithMock(MainView()) {
-            DependencyValues[\.networkService] = .mock(movies: [.inception], wait: true)
+            DependencyValues[\.networkService] = .mock(movies: [.inception], wait: false)
             DependencyValues[\.persistenceService] = .mock
         }
     }

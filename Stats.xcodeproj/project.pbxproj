@@ -33,7 +33,7 @@
 		81CEDC022911571F00C5EFE6 /* PersistentService+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC012911571F00C5EFE6 /* PersistentService+Mock.swift */; };
 		81CEDC07291157A600C5EFE6 /* MediaContentViewMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC06291157A600C5EFE6 /* MediaContentViewMock.swift */; };
 		81CEDC0B291173DD00C5EFE6 /* PersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC0A291173DD00C5EFE6 /* PersistenceServiceTests.swift */; };
-		81CEDC0D2911767500C5EFE6 /* LayoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC0C2911767400C5EFE6 /* LayoutType.swift */; };
+		81CEDC0D2911767500C5EFE6 /* MediaLayoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CEDC0C2911767400C5EFE6 /* MediaLayoutType.swift */; };
 		81DEEDA5290FE22700106BC6 /* StatsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEEDA4290FE22700106BC6 /* StatsApp.swift */; };
 		81DEEDA9290FE22800106BC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81DEEDA8290FE22800106BC6 /* Assets.xcassets */; };
 		81DEEDB6290FE22800106BC6 /* NetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEEDB5290FE22800106BC6 /* NetworkServiceTests.swift */; };
@@ -77,7 +77,7 @@
 		81CEDC012911571F00C5EFE6 /* PersistentService+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistentService+Mock.swift"; sourceTree = "<group>"; };
 		81CEDC06291157A600C5EFE6 /* MediaContentViewMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaContentViewMock.swift; sourceTree = "<group>"; };
 		81CEDC0A291173DD00C5EFE6 /* PersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceServiceTests.swift; sourceTree = "<group>"; };
-		81CEDC0C2911767400C5EFE6 /* LayoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutType.swift; sourceTree = "<group>"; };
+		81CEDC0C2911767400C5EFE6 /* MediaLayoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLayoutType.swift; sourceTree = "<group>"; };
 		81DEEDA1290FE22700106BC6 /* Stats.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stats.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81DEEDA4290FE22700106BC6 /* StatsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsApp.swift; sourceTree = "<group>"; };
 		81DEEDA8290FE22800106BC6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -134,7 +134,7 @@
 			children = (
 				8143B2C4291010F800BB571E /* Route.swift */,
 				8143B2C62910112300BB571E /* MainView.swift */,
-				81CEDC0C2911767400C5EFE6 /* LayoutType.swift */,
+				81CEDC0C2911767400C5EFE6 /* MediaLayoutType.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -417,7 +417,7 @@
 			files = (
 				8143B2EA2910312500BB571E /* Movie+Mocks.swift in Sources */,
 				81CEDBFE2911547700C5EFE6 /* PersistenceService.swift in Sources */,
-				81CEDC0D2911767500C5EFE6 /* LayoutType.swift in Sources */,
+				81CEDC0D2911767500C5EFE6 /* MediaLayoutType.swift in Sources */,
 				8143B2E92910312500BB571E /* TVShow+Mocks.swift in Sources */,
 				81CEDC07291157A600C5EFE6 /* MediaContentViewMock.swift in Sources */,
 				8143B2FC291038CD00BB571E /* Game+Mocks.swift in Sources */,

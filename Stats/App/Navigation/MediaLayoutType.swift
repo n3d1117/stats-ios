@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum LayoutType: String {
+enum MediaLayoutType: String {
     case grid
     case list
 
@@ -16,11 +16,11 @@ enum LayoutType: String {
 
 // MARK: - Environment value
 private struct LayoutSwitchKey: EnvironmentKey {
-    static let defaultValue: LayoutType = .grid
+    static let defaultValue: MediaLayoutType = .grid
 }
 
 extension EnvironmentValues {
-    var layoutType: LayoutType {
+    var layoutType: MediaLayoutType {
         get { self[LayoutSwitchKey.self] }
         set { self[LayoutSwitchKey.self] = newValue }
     }

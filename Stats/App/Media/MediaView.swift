@@ -137,7 +137,7 @@ struct MediaView: View {
 
     @ViewBuilder
     private func gamesView(_ games: [Game]) -> some View {
-        section(title: "Recently played", media: games)
+        section(title: "Recently played", media: games.sorted(by: { $0.year > $1.year }))
     }
 
     private func section(title: String, media: [any Media]) -> some View {
