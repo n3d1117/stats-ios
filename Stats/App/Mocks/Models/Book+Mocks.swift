@@ -13,6 +13,7 @@ public extension Book {
         title: "Open",
         author: "Andre Agassi",
         isFavorite: false,
+        addedAt: .now,
         reading: false,
         img: "open-by-andre-agassi-SHlF8.webp"
     )
