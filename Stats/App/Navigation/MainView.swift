@@ -14,13 +14,23 @@ struct MainView: View {
 
     @State private var selectedRoute: Route = .movies
     @State private var showCharts = false
+    
+    private let gradientColors: [Route: Color] = [
+        .movies: .blue,
+        .tvShows: .red,
+        .books: .green,
+        .music: .orange,
+        .games: .yellow
+    ]
 
     @AppStorage(MediaLayoutType.storageKey) private var layoutType: MediaLayoutType = .grid
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color("bg_color").ignoresSafeArea()
+                LinearGradient(gradient: .init(colors: [Color("bg_color"), gradientColor.opacity(0.6)]), startPoint: .bottomTrailing, endPoint: .topLeading)
+                    .opacity(0.6)
+                    .ignoresSafeArea()
                 MediaView(mediaType: selectedRoute)
                     .navigationBarTitleDisplayMode(.inline)
                     .navigationTitle(selectedRoute.label)
@@ -43,9 +53,14 @@ struct MainView: View {
         }
         .environmentObject(dataLoader)
         .environment(\.layoutType, layoutType)
+        .environment(\.colorScheme, .dark)
         .task {
             await dataLoader.load()
         }
+    }
+    
+    private var gradientColor: Color {
+        gradientColors[selectedRoute] ?? .accentColor
     }
 
     private var layoutButton: some View {
@@ -55,6 +70,7 @@ struct MainView: View {
             Image(systemName: layoutType == .list ? "square.grid.2x2" : "list.bullet")
         }
         .disabled(!buttonsEnabled)
+        .foregroundColor(gradientColor)
     }
 
     private var chartsButton: some View {
@@ -64,15 +80,18 @@ struct MainView: View {
             Image(systemName: "chart.xyaxis.line")
         }
         .disabled(!buttonsEnabled)
+        .foregroundColor(gradientColor)
         .sheet(isPresented: $showCharts) {
             NavigationStack {
                 ZStack {
-                    Color("bg_color").ignoresSafeArea()
+                    LinearGradient(gradient: .init(colors: [Color("bg_color"), .purple.opacity(0.5)]), startPoint: .bottomTrailing, endPoint: .topLeading)
+                        .opacity(0.5)
+                        .ignoresSafeArea()
                     StatsView()
                         .navigationTitle("Stats")
                         .environmentObject(dataLoader)
                 }
-            }
+            }.environment(\.colorScheme, .dark)
         }
     }
 
