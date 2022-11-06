@@ -43,7 +43,7 @@ struct MediaView: View {
                 ScrollView {
                     VStack(alignment: .leading) {
                         Text("Dummy header")
-                            .font(.system(size: 20, weight: .semibold, design: .rounded))
+                            .font(.system(size: 22, weight: .semibold, design: .rounded))
 
                         switch (layoutType, mediaType) {
                         case (.list, .music): MediaListCircleViewMock()
@@ -143,7 +143,7 @@ struct MediaView: View {
     private func section(title: String, media: [any Media]) -> some View {
         VStack(alignment: .leading) {
             Text(title)
-                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
             MediaContentView(media: media)
         }
     }

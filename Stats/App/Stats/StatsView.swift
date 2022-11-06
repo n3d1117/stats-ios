@@ -13,8 +13,8 @@ import Networking
 struct StatsView: View {
     
     @StateObject private var viewModel = StatsViewModel()
-        
     @EnvironmentObject var dataLoader: NetworkDataLoader
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack {
@@ -24,29 +24,39 @@ struct StatsView: View {
                 ScrollView {
                     VStack(alignment: .leading) {
                         
-                        HStack(alignment: .bottom) {
+                        HStack {
                             Text("Stats")
-                                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                            
                             Spacer()
+                            
                             miniChartView
                                 .frame(height: 20)
-                                .padding(.horizontal, 8)
-                                .offset(y: -5)
+                                .padding(.horizontal, 30)
+                                .offset(y: -2)
                                 .animation(.default.delay(0.5), value: viewModel.timeFilter)
                                 .animation(.default.delay(0.5), value: viewModel.shiftIndex)
+                            
+                            Spacer()
+                            
+                            closeButton
                         }
                         
+                        Divider()
+                            .padding(.horizontal, -15)
+                        
                         timeFilterView
+                            .padding(.top)
                         
                         dateRangeView
-                            .padding(.vertical)
+                            .padding(.vertical, 10)
                         
                         chartView
                             .frame(height: 300)
                             .animation(.default, value: viewModel.filteredChartData)
                         
                         Text("Details")
-                            .font(.system(size: 20, weight: .semibold, design: .rounded))
+                            .font(.system(size: 22, weight: .semibold, design: .rounded))
                             .padding(.top)
                         
                         chartListData
@@ -68,6 +78,17 @@ struct StatsView: View {
                 }
             }
         }.animation(.default, value: dataLoader.state)
+        
+    }
+    
+    private var closeButton: some View {
+        Button {
+            dismiss()
+        } label: {
+            Image(systemName: "xmark.circle.fill")
+                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                .foregroundColor(.secondary.opacity(0.7))
+        }
         
     }
     
