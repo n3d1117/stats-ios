@@ -170,7 +170,7 @@ struct StatsView: View {
                     }
             }
             
-            if let gestureRange = viewModel.gestureRange {
+            if let gestureRange = (viewModel.gestureRangeLiveDrag ?? viewModel.gestureRange) {
                 RectangleMark(
                     xStart: .value("Range start", gestureRange.lower),
                     xEnd: .value("Range end", gestureRange.upper)
@@ -225,8 +225,12 @@ struct StatsView: View {
                                !startDate.compare(.isSameDay(currentDate)),
                                viewModel.filteredDateRange.contains(startDate),
                                viewModel.filteredDateRange.contains(currentDate) {
-                                viewModel.gestureRange = .init(lower: startDate, upper: currentDate)
+                                viewModel.gestureRangeLiveDrag = .init(lower: startDate, upper: currentDate)
                             }
+                        }
+                        .onEnded { _ in
+                            viewModel.gestureRange = viewModel.gestureRangeLiveDrag
+                            viewModel.gestureRangeLiveDrag = nil
                         }
                     )
                     .onTapGesture { location in
@@ -238,26 +242,45 @@ struct StatsView: View {
             }
         }
         .chartOverlay(alignment: .topLeading) { _ in
-            if let additionalText = viewModel.additionalText {
-                HStack(spacing: 5) {
-                    Button {
-                        viewModel.clearSelection()
-                    } label: {
-                        Text("Clear")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                            .padding(.vertical, 3)
-                            .padding(.horizontal, 8)
-                            .background(.secondary.opacity(0.3), in: Capsule(style: .continuous))
-                    }
-                    .foregroundColor(.secondary.opacity(0.8))
-                    
-                    Text(additionalText)
-                        .foregroundColor(.secondary)
-                        .font(.subheadline)
-                }
+            if let _ = viewModel.gestureRangeLiveDrag {
+                releaseToApplyView
+            } else if let _ = viewModel.gestureRange {
+                filterTextView
             }
         }
+    }
+    
+    private var releaseToApplyView: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                .font(.subheadline)
+                .foregroundColor(.secondary.opacity(0.6))
+                .padding(.vertical, 3)
+            
+            Text("Release to apply filter")
+                .foregroundColor(.secondary)
+                .font(.subheadline)
+        }.offset(y: -4)
+    }
+    
+    private var filterTextView: some View {
+        HStack(spacing: 5) {
+            Button {
+                viewModel.clearSelection()
+            } label: {
+                Text("Clear")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.8))
+                    .padding(.vertical, 3)
+                    .padding(.horizontal, 8)
+                    .background(.secondary.opacity(0.6), in: Capsule(style: .continuous))
+            }
+            .foregroundColor(.secondary.opacity(0.8))
+            
+            Text("\(viewModel.filteredGridListData.count) selected")
+                .foregroundColor(.secondary)
+                .font(.subheadline)
+        }.offset(y: -1)
     }
     
     private var chartListData: some View {

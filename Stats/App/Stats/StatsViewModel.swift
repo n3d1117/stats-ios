@@ -21,6 +21,7 @@ import Charts
     @Published var timeFilter: TimeFilter = .threeMonths { didSet { shiftIndex = 0 } }
     @Published var shiftIndex: Int = 0 { didSet { recalculateFilteredDateRange() } }
     @Published var gestureRange: DateRange?
+    @Published var gestureRangeLiveDrag: DateRange?
     
     // Private vars
     private var apiResponse: APIResponse = .empty
@@ -131,7 +132,7 @@ extension StatsViewModel {
     }
     
     var dateIntervalFormatted: String {
-        let range: DateRange = gestureRange ?? filteredDateRange
+        let range: DateRange = gestureRangeLiveDrag ?? filteredDateRange
         return dateIntervalFormatter.string(from: range.range.lowerBound, to: range.range.upperBound).capitalized
     }
     
@@ -159,13 +160,6 @@ extension StatsViewModel {
         case .threeMonths: return .weekOfYear
         case .month, .week: return .day
         }
-    }
-    
-    var additionalText: String? {
-        if gestureRange != nil {
-            return "\(filteredGridListData.count) selected"
-        }
-        return nil
     }
     
     // MARK: - Private
