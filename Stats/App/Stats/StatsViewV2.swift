@@ -187,15 +187,25 @@ struct StatsViewV2: View {
         }
     }
     
-    private var chartListData: some View {
-        LazyVStack(alignment: .leading) {
-            GridView {
-                ForEach(viewModel.filteredGridListData) { item in
-                    ChartGridItemView(
-                        title: item.title,
-                        subtitle: item.subtitle,
-                        imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded)
-                    )
+    @ViewBuilder private var chartListData: some View {
+        if viewModel.filteredGridListData.isEmpty {
+            VStack {
+                Text("No content for this period")
+                    .foregroundColor(.secondary)
+                    .font(.subheadline)
+            }
+            .frame(height: 150)
+            .frame(maxWidth: .infinity)
+        } else {
+            LazyVStack(alignment: .leading) {
+                GridView {
+                    ForEach(viewModel.filteredGridListData) { item in
+                        ChartGridItemView(
+                            title: item.title,
+                            subtitle: item.subtitle,
+                            imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded)
+                        )
+                    }
                 }
             }
         }
