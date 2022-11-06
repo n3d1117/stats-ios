@@ -14,11 +14,20 @@ public struct TVShow: Codable, Identifiable, Equatable {
         
         public let episode: String
         public let name: String
+        public let parentShowID: String
         public let lastWatched: Date
         
         enum CodingKeys: String, CodingKey {
             case episode, name
+            case parentShowID = "parent_show_id"
             case lastWatched = "watched_on"
+        }
+        
+        public init(episode: String, name: String, parentShowID: String, lastWatched: Date) {
+            self.episode = episode
+            self.name = name
+            self.parentShowID = parentShowID
+            self.lastWatched = lastWatched
         }
     }
     

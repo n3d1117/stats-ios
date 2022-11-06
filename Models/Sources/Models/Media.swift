@@ -29,7 +29,7 @@ extension Movie: Media {
 }
 
 extension TVShow: Media {
-    public var subtitle: String? { String(episode) }
+    public var subtitle: String? { episode }
     public var image: String { img }
     public var aspectRatio: CGFloat { Constants.aspectRatio }
     public var circle: Bool { false }

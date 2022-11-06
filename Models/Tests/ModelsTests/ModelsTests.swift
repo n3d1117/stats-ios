@@ -11,9 +11,9 @@ final class ModelsTests: XCTestCase {
         id: "1", title: "Inception", lastWatched: Date(), isFavorite: false, isCinema: true, img: "", year: 2_012
     )
     let boris: TVShow = TVShow(
-        id: "1", title: "Boris", lastWatched: Date(), episode: "S1E1", isFavorite: false, img: ""
+        id: "1", title: "Boris", lastWatched: Date(), episode: "S1E1", episodes: [], isFavorite: false, img: ""
     )
-    let open: Book = Book(id: "1", title: "Open", author: "Andre Agassi", isFavorite: false, reading: false, img: "")
+    let open: Book = Book(id: "1", title: "Open", author: "Andre Agassi", isFavorite: false, addedAt: Date(), reading: false, img: "")
     let radiohead: Artist = Artist(id: "1", name: "Radiohead", img: "")
     let gow: Game = Game(id: "1", name: "God of War", year: 2_018, img: "")
 
