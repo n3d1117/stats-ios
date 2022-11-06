@@ -8,6 +8,7 @@
 import SwiftUI
 import DependencyInjection
 import Charts
+import Networking
 
 struct StatsViewV2: View {
     
@@ -35,35 +36,18 @@ struct StatsViewV2: View {
                 
                 timeFilterView
                 
-                HStack {
-                    Button {
-                        viewModel.shiftIndex -= 1
-                    } label: {
-                        Image(systemName: "chevron.backward.circle.fill")
-                            .font(.system(size: 18))
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(viewModel.previousEnabled ? .secondary.opacity(0.8) : .secondary.opacity(0.3))
-                    .disabled(!viewModel.previousEnabled)
-                    
-                    Text(viewModel.dateIntervalFormatted)
-                        .font(.subheadline)
-                        .frame(maxWidth: .infinity)
-                    
-                    Button {
-                        viewModel.shiftIndex += 1
-                    } label: {
-                        Image(systemName: "chevron.forward.circle.fill")
-                            .font(.system(size: 18))
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(viewModel.nextEnabled ? .secondary.opacity(0.8) : .secondary.opacity(0.3))
-                    .disabled(!viewModel.nextEnabled)
-                }
-                .padding(.vertical)
+                dateRangeView
+                    .padding(.vertical)
                 
                 chartView
                     .frame(height: 300)
+                    .animation(.default, value: viewModel.filteredDateRange)
+                
+                Text("Details")
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
+                    .padding(.top)
+                
+                chartListData
                     .animation(.default, value: viewModel.filteredDateRange)
                 
             }
@@ -78,6 +62,34 @@ struct StatsViewV2: View {
             }
         }
         .pickerStyle(.segmented)
+    }
+    
+    private var dateRangeView: some View {
+        HStack {
+            Button {
+                viewModel.shiftIndex -= 1
+            } label: {
+                Image(systemName: "chevron.backward.circle.fill")
+                    .font(.system(size: 18))
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(viewModel.previousEnabled ? .secondary.opacity(0.8) : .secondary.opacity(0.3))
+            .disabled(!viewModel.previousEnabled)
+            
+            Text(viewModel.dateIntervalFormatted)
+                .font(.subheadline)
+                .frame(maxWidth: .infinity)
+            
+            Button {
+                viewModel.shiftIndex += 1
+            } label: {
+                Image(systemName: "chevron.forward.circle.fill")
+                    .font(.system(size: 18))
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(viewModel.nextEnabled ? .secondary.opacity(0.8) : .secondary.opacity(0.3))
+            .disabled(!viewModel.nextEnabled)
+        }
     }
     
     private var miniChartView: some View {
@@ -173,6 +185,22 @@ struct StatsViewV2: View {
             }
             .frame(minWidth: 200, alignment: .trailing)
         }
+    }
+    
+    private var chartListData: some View {
+        LazyVStack(alignment: .leading) {
+            GridView {
+                ForEach(viewModel.filteredGridListData) { item in
+                    ChartGridItemView(
+                        title: item.title,
+                        subtitle: item.subtitle,
+                        imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded)
+                    )
+                }
+            }
+        }
+        //.animation(.default, value: viewModel.gestureRange)
+        //.animation(.default, value: viewModel.gestureTap)
     }
 }
 

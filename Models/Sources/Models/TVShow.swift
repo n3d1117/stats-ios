@@ -35,7 +35,7 @@ public struct TVShow: Codable, Identifiable, Equatable {
     public let title: String
     public let lastWatched: Date
     public let episode: String
-    public let episodes: [Episode]
+    public var episodes: [Episode]
     public let isFavorite: Bool
     public let img: String
 
