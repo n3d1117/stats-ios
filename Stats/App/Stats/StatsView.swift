@@ -2,21 +2,19 @@
 //  StatsView.swift
 //  Stats
 //
-//  Created by ned on 31/10/22.
+//  Created by ned on 05/11/22.
 //
 
-import Charts
-import DependencyInjection
-import Models
 import SwiftUI
-import SwiftDate
+import DependencyInjection
+import Charts
 import Networking
 
 struct StatsView: View {
-
-    @EnvironmentObject var dataLoader: NetworkDataLoader
     
     @StateObject private var viewModel = StatsViewModel()
+        
+    @EnvironmentObject var dataLoader: NetworkDataLoader
     
     var body: some View {
         ZStack {
@@ -26,26 +24,39 @@ struct StatsView: View {
                 ScrollView {
                     VStack(alignment: .leading) {
                         
-                        VStack(alignment: .leading) {
+                        HStack(alignment: .bottom) {
                             Text("Stats")
                                 .font(.system(size: 20, weight: .semibold, design: .rounded))
+                            Spacer()
+                            miniChartView
+                                .frame(height: 20)
+                                .padding(.horizontal, 8)
+                                .offset(y: -5)
+                                .animation(.default.delay(0.5), value: viewModel.timeFilter)
+                                .animation(.default.delay(0.5), value: viewModel.shiftIndex)
                         }
-                        
-                        timePeriodView
                         
                         timeFilterView
                         
-                        chartView
+                        dateRangeView
                             .padding(.vertical)
                         
+                        chartView
+                            .frame(height: 300)
+                            .animation(.default, value: viewModel.filteredChartData)
+                        
+                        Text("Details")
+                            .font(.system(size: 20, weight: .semibold, design: .rounded))
+                            .padding(.top)
+                        
                         chartListData
+                            .animation(.default, value: viewModel.filteredGridListData)
                         
                     }
                     .padding()
-                    .animation(.default, value: viewModel.dateRange)
                 }
                 .task {
-                    viewModel.generateChartData(from: response)
+                    viewModel.generateData(with: response)
                 }
 
             case .loading:
@@ -57,94 +68,72 @@ struct StatsView: View {
                 }
             }
         }.animation(.default, value: dataLoader.state)
+        
     }
     
     private var timeFilterView: some View {
         Picker("Time filter", selection: $viewModel.timeFilter) {
-            ForEach(StatsViewModel.TimeFilterType.allCases, id: \.rawValue) { type in
+            ForEach(StatsViewModel.TimeFilter.allCases, id: \.rawValue) { type in
                 Text(type.rawValue).tag(type)
             }
         }
         .pickerStyle(.segmented)
     }
     
-    private var timePeriodView: some View {
+    private var dateRangeView: some View {
         HStack {
             Button {
-                viewModel.shiftIndex = -1
+                viewModel.shiftIndex -= 1
             } label: {
                 Image(systemName: "chevron.backward.circle.fill")
-                    .font(.system(size: 17))
+                    .font(.system(size: 18))
                     .fontWeight(.semibold)
             }
             .foregroundColor(viewModel.previousEnabled ? .secondary.opacity(0.8) : .secondary.opacity(0.3))
             .disabled(!viewModel.previousEnabled)
             
-            Spacer()
-            
-            if viewModel.timeFilter != .week {
-                Menu {
-                    switch viewModel.timeFilter {
-                    case .month:
-                        Picker("", selection: Binding(get: { viewModel.currentSelectedDate }, set: {
-                            viewModel.customDate = .init(month: $0.month, year: $0.year)
-                        })) {
-                            ForEach(viewModel.availableMonthsAndYears) { date in
-                                Text(date.formatted ?? "").tag(date)
-                            }
-                        }
-                    case .year:
-                        Picker("", selection: Binding(get: { viewModel.currentSelectedYear }, set: {
-                            viewModel.customDate = .init(month: nil, year: $0)
-                        })) {
-                            ForEach(viewModel.availableYears, id: \.self) { year in
-                                Text(String(year)).tag(year)
-                            }
-                        }
-                    case .week:
-                        EmptyView()
-                    }
-                    
-                } label: {
-                    HStack(spacing: 5) {
-                        Text(viewModel.dateIntervalFormatted)
-                            .font(.system(size: 15, design: .rounded))
-                            .foregroundColor(.primary.opacity(0.8))
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 11, design: .rounded))
-                            .foregroundColor(.primary.opacity(0.8))
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            } else {
-                Text(viewModel.dateIntervalFormatted)
-                    .font(.system(size: 15, design: .rounded))
-                    .foregroundColor(.primary.opacity(0.8))
-            }
-            
-            Spacer()
+            Text(viewModel.dateIntervalFormatted)
+                .font(.subheadline)
+                .frame(maxWidth: .infinity)
             
             Button {
-                viewModel.shiftIndex = 1
+                viewModel.shiftIndex += 1
             } label: {
                 Image(systemName: "chevron.forward.circle.fill")
-                    .font(.system(size: 17))
+                    .font(.system(size: 18))
                     .fontWeight(.semibold)
             }
             .foregroundColor(viewModel.nextEnabled ? .secondary.opacity(0.8) : .secondary.opacity(0.3))
             .disabled(!viewModel.nextEnabled)
         }
-        .padding(.vertical, 4)
-        .padding(.horizontal, 10)
-        .background(.gray.opacity(0.18), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
-        .padding(.top, 10)
+    }
+    
+    private var miniChartView: some View {
+        Chart {
+            ForEach(viewModel.globalChartData) { item in
+                BarMark(
+                    x: .value("Date", item.date, unit: .month),
+                    y: .value("Watches", 1)
+                )
+                .foregroundStyle(.gray)
+                .opacity(0.4)
+            }
+            RectangleMark(
+                xStart: .value("Range start", viewModel.filteredDateRange.lower),
+                xEnd: .value("Range end", viewModel.filteredDateRange.upper.dateAtEndOf(.month))
+            )
+            .foregroundStyle(.gray.opacity(0.2))
+        }
+        .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
+        .chartLegend(.hidden)
     }
     
     private var chartView: some View {
         Chart {
             ForEach(viewModel.filteredChartData) { value in
                 BarMark(
-                    x: .value("Date", value.item.lastWatched, unit: .day),
+                    x: .value("Date", value.date, unit: viewModel.mainChartUnit),
                     y: .value("Watches", 1)
                 )
                 .foregroundStyle(by: .value("", value.group.rawValue))
@@ -162,22 +151,21 @@ struct StatsView: View {
             
             if let gestureRange = viewModel.gestureRange {
                 RectangleMark(
-                    xStart: .value("Range start", gestureRange.lowerBound),
-                    xEnd: .value("Range end", gestureRange.upperBound)
+                    xStart: .value("Range start", gestureRange.lower),
+                    xEnd: .value("Range end", gestureRange.upper)
                 )
                 .foregroundStyle(.gray.opacity(0.2))
             }
-
         }
-        .frame(height: 300)
-        .chartXScale(domain: viewModel.dateRange)
+        .chartXScale(domain: viewModel.filteredDateRange.range)
         .chartYScale(domain: .automatic(dataType: Int.self) { domain in
             if let last = domain.last, last > 0, last < 6 {
                 domain.append(last + 1)
             }
         })
         .chartForegroundStyleScale([
-            "Movies": .blue, "Shows": .green
+            StatsViewModel.ChartGroupType.movies: .blue,
+            StatsViewModel.ChartGroupType.shows: .green
         ])
         .chartXAxis {
             AxisMarks(values: .stride(by: viewModel.xAxisStride, count: viewModel.xAxisStrideCount))
@@ -208,32 +196,44 @@ struct StatsView: View {
             GeometryReader { reader in
                 Rectangle().fill(.clear).contentShape(Rectangle())
                     .gesture(DragGesture()
-                        .onChanged({ value in
+                        .onChanged { value in
                             let startX = value.startLocation.x - reader[proxy.plotAreaFrame].origin.x
                             let currentX = value.location.x - reader[proxy.plotAreaFrame].origin.x
                             if let startDate: Date = proxy.value(atX: startX),
-                               let currentDate: Date = proxy.value(atX: currentX), startDate != currentDate {
-                                viewModel.gestureRange = startDate < currentDate ? (startDate ... currentDate) : (currentDate ... startDate)
+                               let currentDate: Date = proxy.value(atX: currentX),
+                               !startDate.compare(.isSameDay(currentDate)),
+                               viewModel.filteredDateRange.contains(startDate),
+                               viewModel.filteredDateRange.contains(currentDate) {
+                                viewModel.gestureRange = .init(lower: startDate, upper: currentDate)
                             }
-                        })
+                        }
                     )
                     .onTapGesture { location in
                         let xPosition = location.x - reader[proxy.plotAreaFrame].origin.x
-                        if let selectedDate: Date = proxy.value(atX: xPosition) {
-                            viewModel.gestureTap = selectedDate
+                        if let _: Date = proxy.value(atX: xPosition) {
+                            viewModel.clearSelection()
                         }
                     }
             }
         }
         .chartOverlay(alignment: .topLeading) { _ in
             if let additionalText = viewModel.additionalText {
-                HStack {
-                    Text(additionalText)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Button("clear") {
-                        viewModel.clearAll()
+                HStack(spacing: 5) {
+                    Button {
+                        viewModel.clearSelection()
+                    } label: {
+                        Text("Clear")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                            .padding(.vertical, 3)
+                            .padding(.horizontal, 8)
+                            .background(.secondary.opacity(0.3), in: Capsule(style: .continuous))
                     }
+                    .foregroundColor(.secondary.opacity(0.8))
+                    
+                    Text(additionalText)
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
                 }
             }
         }
@@ -241,51 +241,45 @@ struct StatsView: View {
     
     private var chartListData: some View {
         VStack(alignment: .leading) {
-            Text("Details")
-                .font(.system(size: 20, weight: .semibold, design: .rounded))
-            
-            LazyVStack(alignment: .leading) {
-                
-                GridView(width: 80) {
-                    ForEach(viewModel.filteredChartListData.sorted(by: { $0.item.lastWatched > $1.item.lastWatched })) { value in
+            if viewModel.filteredGridListData.isEmpty {
+                VStack {
+                    Text("No content for this period")
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                }
+                .frame(height: 150)
+                .frame(maxWidth: .infinity)
+            } else {
+                GridView {
+                    ForEach(viewModel.filteredGridListData) { item in
                         ChartGridItemView(
-                            title: value.item.title,
-                            subtitle: value.item.lastWatched.formatted(date: .numeric, time: .omitted) + ", " + value.item.lastWatched.formatted(date: .omitted, time: .shortened),
-                            imageURL: URL(string: (API.baseImageUrl + value.item.image).urlEncoded)
+                            title: item.title,
+                            subtitle: item.subtitle,
+                            imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded)
                         )
                     }
                 }
             }
         }
-        .animation(.default, value: viewModel.gestureRange)
-        .animation(.default, value: viewModel.gestureTap)
     }
 }
 
-/*struct ScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1)
-    }
-}*/
-
 struct StatsView_Previews: PreviewProvider {
-
+    
     struct Preview: View {
 
         @StateObject private var dataLoader = NetworkDataLoader()
 
         var body: some View {
             StatsView()
+                .environmentObject(dataLoader)
                 .task {
-                    // DependencyValues[\.networkService] = .mock(movies: [.inception, .blonde, .donnieDarko, .inception])
                     DependencyValues[\.persistenceService] = .mock
                     await dataLoader.load()
                 }
-                .environmentObject(dataLoader)
         }
     }
-
+    
     static var previews: some View {
         NavigationStack {
             ZStack {
@@ -297,9 +291,3 @@ struct StatsView_Previews: PreviewProvider {
         }.environment(\.colorScheme, .dark)
     }
 }
-
-
-
-
-
-

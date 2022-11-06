@@ -2,244 +2,170 @@
 //  StatsViewModel.swift
 //  Stats
 //
-//  Created by ned on 02/11/22.
+//  Created by ned on 05/11/22.
 //
 
 import Foundation
 import Models
 import SwiftDate
-
-extension Array {
-  func sliced(by dateComponents: Set<Calendar.Component>, for key: KeyPath<Element, Date>) -> [Date: [Element]] {
-    let initial: [Date: [Element]] = [:]
-    let groupedByDateComponents = reduce(into: initial) { acc, cur in
-      let components = Calendar.current.dateComponents(dateComponents, from: cur[keyPath: key])
-      let date = Calendar.current.date(from: components)!
-      let existing = acc[date] ?? []
-      acc[date] = existing + [cur]
-    }
-    return groupedByDateComponents
-  }
-}
-
-extension ClosedRange where Bound == Date {
-    func shifted(by index: Int, _ component: Calendar.Component) -> ClosedRange<Date> {
-        let shiftedStart = lowerBound.in(region: .current).dateByAdding(index, component).dateAtStartOf(component).date
-        let shiftedEnd = upperBound.in(region: .current).dateByAdding(index, component).dateAtEndOf(component).date
-        return shiftedStart...shiftedEnd
-    }
-}
+import Charts
 
 @MainActor final class StatsViewModel: ObservableObject {
     
-    @Published private(set) var filteredChartData: [SingleWatch] = []
-    @Published private(set) var filteredChartListData: [SingleWatch] = []
-    @Published var dateRange: ClosedRange<Date> = .init(uncheckedBounds: (.now, .now))
+    // Data
+    @Published private(set) var globalChartData: [ChartData] = []
+    @Published private(set) var globalDateRange: DateRange = .now
+    @Published private(set) var filteredDateRange: DateRange = .now
     
-    @Published var gestureTap: Date? = nil { didSet { onTapGestureChange() } }
-    @Published var gestureRange: ClosedRange<Date>? = nil { didSet { onDragGestureChange() } }
-    @Published var customDate: CustomDate = .now { didSet { onCustomDateChange() } }
-    @Published var timeFilter: TimeFilterType = .month { didSet { onTimeFilterChange() } }
-    @Published var shiftIndex: Int = 0 { didSet { updateChartData() } }
+    // UI
+    @Published var timeFilter: TimeFilter = .threeMonths { didSet { shiftIndex = 0 } }
+    @Published var shiftIndex: Int = 0 { didSet { recalculateFilteredDateRange() } }
+    @Published var gestureRange: DateRange?
     
-    private var originalData: [SingleWatch] = [] { didSet { updateChartData() } }
-    private var minDate: Date?
-    private var maxDate: Date?
+    // Private vars
+    private var apiResponse: APIResponse = .empty
+    private let currentDate = DateInRegion(region: .current)
     
-    func generateChartData(from response: APIResponse) {
-        let moviesData: [SingleWatch] = response.movies
-            .filter({ $0.lastWatched.dateComponents.year! >= 2021 })
-            .sliced(by: [.year, .month, .day], for: \.lastWatched).flatMap { day, movies in
-                movies.map { SingleWatch(item: $0.asChartRepresentable(), group: .movies) }
-            }
+    func generateData(with apiResponse: APIResponse) {
+        self.apiResponse = apiResponse
         
-        let showsData: [SingleWatch] = response.tvShows
+        let moviesData: [ChartData] = apiResponse.movies
+            .filter({ $0.lastWatched.dateComponents.year! >= 2021 })
+            .map { ChartData(id: $0.id, date: $0.lastWatched, group: .movies, dataType: .movie($0)) }
+        
+        let showsData: [ChartData] = apiResponse.tvShows
             .flatMap(\.episodes)
             .filter({ $0.lastWatched.dateComponents.year! >= 2021 })
-            .sliced(by: [.year, .month, .day], for: \.lastWatched).flatMap { day, episodes in
-                episodes.compactMap { ep in
-                    if let parent: TVShow = response.tvShows.filter({ show in
-                        show.id == ep.parentShowID
-                    }).first {
-                        return SingleWatch(item: ep.asChartRepresentable(parent: parent), group: .shows)
-                    } else {
-                        return nil
-                    }
-                }
-            }
+            .map { ChartData(id: $0.id, date: $0.lastWatched, group: .shows, dataType: .episode($0)) }
         
-        let combined: [SingleWatch] = (moviesData + showsData)
+        // data
+        self.globalChartData = (moviesData + showsData)
         
-        let dates = combined.map(\.item.lastWatched).sorted()
-        minDate = dates.min()
-        maxDate = dates.max()
+        // range
+        let allDates = globalChartData.map(\.date).sorted()
+        if let minDate = allDates.min(), let maxDate = allDates.max() {
+            self.globalDateRange = .init(lower: minDate, upper: maxDate)
+        }
         
-        dateRange = initialRange()
-        originalData = combined
+        recalculateFilteredDateRange()
     }
     
-    private func initialRange() -> ClosedRange<Date> {
-        let startDate = DateInRegion(region: .current).dateAtStartOf(timeFilter.component).date
-        let endDate = DateInRegion(region: .current).dateAtEndOf(timeFilter.component).date
-        let range: ClosedRange<Date> = startDate ... endDate
-        return range
-    }
-    
-    func onTapGestureChange() {
-        if let gestureTap {
-            filteredChartListData = originalData
-                .filter({ gestureTap.isInside(date: $0.item.lastWatched, granularity: .day) })
-            
-            gestureRange = nil
-            
-            if filteredChartListData.isEmpty {
-                self.gestureTap = nil
-            }
-        } else if filteredChartListData.isEmpty {
-            //if gestureRange != nil { gestureRange = nil }
-            //filteredChartListData = filteredChartData
-        }
-    }
-    
-    func onDragGestureChange() {
-        if let gestureRange {
-            filteredChartListData = originalData
-                .filter({ gestureRange.contains($0.item.lastWatched) })
-            
-            gestureTap = nil
-        } else if filteredChartListData.isEmpty {
-            if gestureTap != nil { gestureTap = nil }
-            filteredChartListData = filteredChartData
-        }
-    }
-    
-    func clearAll() {
-        if gestureTap != nil { gestureTap = nil }
-        if gestureRange != nil { gestureRange = nil }
-        filteredChartListData = filteredChartData
-    }
-    
-    func onCustomDateChange() {
-        switch timeFilter {
-        case .year:
-            shiftIndex = customDate.year - dateRange.upperBound.year
-        case .month:
-            var monthDifference: Int = 0
-            if let month = customDate.month { monthDifference = month - dateRange.upperBound.month }
-            let yearDifference = customDate.year - dateRange.upperBound.year
-            shiftIndex = monthDifference + yearDifference*12
-        default:
-            break
-        }
-    }
-    
-    func onTimeFilterChange() {
-        shiftIndex = 0
-    }
-    
-    func updateChartData() {
-        gestureTap = nil
+    // Calculate new date range based on UI filters
+    func recalculateFilteredDateRange() {
         gestureRange = nil
-        guard let maxDate else { return }
-        
-        let newStart = dateRange.upperBound.in(region: .current).dateAtStartOf(timeFilter.component).date
-        let newEnd = dateRange.upperBound.in(region: .current).dateAtEndOf(timeFilter.component).date
-        var newRange = (newStart ... newEnd).shifted(by: shiftIndex, timeFilter.component)
-        
-        while newRange.lowerBound > maxDate {
-            newRange = newRange.shifted(by: -1, timeFilter.component)
-        }
-        
-        dateRange = newRange
-        filteredChartData = originalData.filter({ dateRange.contains($0.item.lastWatched) })
-        filteredChartListData = filteredChartData
-        
-        /*filteredChartListData = a.compactMap({ title, watches in
-            if let title, let w = watches.first {
-                let c = ChartRepresentable(title: title, subtitle: nil, image: w.item.image, lastWatched: w.item.lastWatched)
-                return SingleWatch(item: c, count: watches.count, group: .shows)
-            } else if let w = watches.first {
-                return w
-            }
-            return nil
-        })*/
-    }
-    
-    var dateIntervalFormatted: String {
-        if let gestureRange {
-            return dateIntervalFormatter.string(from: gestureRange.lowerBound, to: gestureRange.upperBound)
+        if shiftIndex != .zero {
+            let times = abs(shiftIndex-1)
+            let multiplier = shiftIndex > 0 ? timeFilter.multiplier : -timeFilter.multiplier
+            
+            var startDate: Date = currentDate
+                .dateByAdding(multiplier*times, timeFilter.component)
+                .date
+            var endDate = startDate
+                .dateByAdding(-multiplier, timeFilter.component)
+                .date
+            
+            startDate = globalDateRange.lower <= startDate ? startDate : globalDateRange.lower
+            endDate = globalDateRange.upper >= endDate ? endDate : globalDateRange.upper
+            
+            filteredDateRange = .init(lower: startDate.dateAtStartOf(mainChartUnit), upper: endDate.dateAtEndOf(mainChartUnit))
         } else {
-            return dateIntervalFormatter.string(from: dateRange.lowerBound, to: dateRange.upperBound)
+            let startDate: Date = currentDate
+                .dateByAdding(-timeFilter.multiplier, timeFilter.component)
+                .dateAtStartOf(mainChartUnit)
+                .date
+            let endDate = currentDate.dateAtEndOf(mainChartUnit).date
+            filteredDateRange = .init(lower: startDate, upper: endDate)
         }
     }
+
+    func clearSelection() {
+        if gestureRange != nil { gestureRange = nil }
+    }
+}
+
+// MARK: - Computed vars
+extension StatsViewModel {
     
-    var additionalText: String? {
-        if (gestureRange != nil || gestureTap != nil), !filteredChartListData.isEmpty {
-            return "\(filteredChartListData.count) selected"
+    var filteredGridListData: [GridListData] {
+        var gridData: [GridListData] = []
+        
+        var source = filteredChartData
+        
+        if let gestureRange {
+            source = source.filter({ gestureRange.contains($0.date) })
         }
-        return nil
+        
+        var eps: [TVShow.Episode] = []
+        for d in source {
+            switch d.dataType {
+            case .movie(let movie):
+                gridData.append(.init(.movie(movie)))
+            case .episode(let episode):
+                eps.append(episode)
+            }
+        }
+        
+        let groupedShows: [TVShow] = Dictionary(grouping: eps, by: { $0.parentShowID }).compactMap({ showID, episodes in
+            if var fullShow = apiResponse.tvShows.first(where: { $0.id == showID }) {
+                fullShow.episodes = episodes
+                return fullShow
+            } else {
+                return nil
+            }
+        })
+        
+        groupedShows.forEach({ gridData.append(.init(.show($0))) })
+        return gridData.sorted(by: { $0.date > $1.date })
     }
     
-    var currentSelectedDate: CustomDate {
-        .init(month: dateRange.upperBound.month, year: dateRange.upperBound.year)
-    }
-    
-    var currentSelectedYear: Int {
-        dateRange.upperBound.year
+    var filteredChartData: [ChartData] {
+        globalChartData.filter({ filteredDateRange.range.contains($0.date) })
     }
     
     var previousEnabled: Bool {
-        guard let minDate else { return true }
-        return minDate < dateRange.lowerBound
+        return globalDateRange.lower < filteredDateRange.lower
     }
     
     var nextEnabled: Bool {
-        guard let maxDate else { return false }
-        return maxDate > dateRange.upperBound
+        return globalDateRange.upper > filteredDateRange.upper
     }
     
-    var availableMonthsAndYears: [CustomDate] {
-        guard let minDate, let maxDate else { return [] }
-        let minYear = minDate.year
-        let maxYear = maxDate.year
-        var final: [CustomDate] = []
-        SwiftDate.defaultRegion = .current
-        (minYear...maxYear).forEach { year in
-            for monthIndex in 1..<13 {
-                guard let date = DateInRegion(components: .init(year: year, month: monthIndex, day: 10), region: .current)?.date else {
-                    continue
-                }
-                guard date.isInRange(date: minDate.dateAtStartOf(.month), and: maxDate.dateAtEndOf(.month)) else {
-                    continue
-                }
-                final.append(.init(month: monthIndex, year: year))
-            }
-        }
-        return final.reversed()
-    }
-    
-    var availableYears: [Int] {
-        guard let minDate, let maxDate else { return [] }
-        return Array(minDate.year...maxDate.year).reversed()
+    var dateIntervalFormatted: String {
+        let range: DateRange = gestureRange ?? filteredDateRange
+        return dateIntervalFormatter.string(from: range.range.lowerBound, to: range.range.upperBound).capitalized
     }
     
     var xAxisStride: Calendar.Component {
         switch timeFilter {
-        case .year: return .month
+        case .year, .sixMonths: return .month
+        case .threeMonths: return .weekOfYear
         case .month, .week: return .day
         }
     }
     
     var xAxisStrideCount: Int {
         switch timeFilter {
-        case .year: return 2
+        case .year: return 3
+        case .threeMonths: return 3
+        case .sixMonths: return 1
         case .month: return 5
         case .week: return 1
         }
     }
     
-    var yRange: ClosedRange<Int> {
-        return 0...(Dictionary(grouping: filteredChartData, by: { $0.item.lastWatched.in(region: .current).day }).map({ $0.1.count }).max() ?? -1) + 1
+    var mainChartUnit: Calendar.Component {
+        switch timeFilter {
+        case .year, .sixMonths: return .weekOfYear
+        case .threeMonths: return .weekOfYear
+        case .month, .week: return .day
+        }
+    }
+    
+    var additionalText: String? {
+        if gestureRange != nil {
+            return "\(filteredGridListData.count) selected"
+        }
+        return nil
     }
     
     // MARK: - Private
@@ -254,78 +180,134 @@ extension ClosedRange where Bound == Date {
 // MARK: - Utilities
 extension StatsViewModel {
     
-    enum TimeFilterType: String, CaseIterable {
-        case week = "Week"
-        case month = "Month"
-        case year = "Year"
+    struct DateRange: Equatable {
+        let lower: Date
+        let upper: Date
+        
+        var range: ClosedRange<Date> {
+            lower > upper ? upper...lower : lower...upper
+        }
+        
+        static let now: Self = .init(lower: .now, upper: .now)
+        
+        func contains(_ date: Date) -> Bool {
+            range.contains(date)
+        }
+        
+        static func == (lhs: DateRange, rhs: DateRange) -> Bool {
+            lhs.lower.compare(.isSameDay(rhs.lower)) &&
+            lhs.upper.compare(.isSameDay(rhs.upper))
+        }
+    }
+    
+    enum ChartGroupType: String, Plottable {
+        case movies = "Movies"
+        case shows = "Shows"
+    }
+    
+    struct ChartData: Identifiable, Equatable {
+        enum DataType: Equatable {
+            case movie(Movie)
+            case episode(TVShow.Episode)
+            
+            static func == (lhs: DataType, rhs: DataType) -> Bool {
+                switch (lhs, rhs) {
+                case (.movie(let movie1), .movie(let movie2)):
+                    return movie1 == movie2
+                case (.episode(let episode1), .episode(let episode2)):
+                    return episode1 == episode2
+                default:
+                    return false
+                }
+            }
+        }
+        
+        let id: String
+        let date: Date
+        let group: ChartGroupType
+        let dataType: DataType
+    }
+    
+    struct GridListData: Identifiable, Equatable {
+        enum DataType {
+            case movie(Movie)
+            case show(TVShow)
+        }
+        
+        let item: DataType
+        
+        init(_ item: DataType) {
+            self.item = item
+        }
+        
+        var id: String {
+            switch item {
+            case .movie(let movie): return movie.id
+            case .show(let show): return show.id
+            }
+        }
+        
+        var date: Date {
+            switch item {
+            case .movie(let movie): return movie.lastWatched
+            case .show(let show): return show.episodes.map(\.lastWatched).max() ?? show.lastWatched
+            }
+        }
+        
+        var image: String {
+            switch item {
+            case .movie(let movie): return movie.image
+            case .show(let show): return show.image
+            }
+        }
+        
+        var title: String {
+            switch item {
+            case .movie(let movie): return movie.title
+            case .show(let show): return show.title
+            }
+        }
+        
+        var subtitle: String {
+            switch item {
+            case .movie(let movie): return movie.lastWatched.formatted(date: .abbreviated, time: .omitted)
+            case .show(let show): return show.episodes.count == 1 ? "\(show.episodes.count) episode" : "\(show.episodes.count) episodes"
+            }
+        }
+        
+        static func == (lhs: GridListData, rhs: GridListData) -> Bool {
+            switch (lhs.item, rhs.item) {
+            case (.movie(let movie1), .movie(let movie2)):
+                return movie1 == movie2
+            case (.show(let show1), .show(let show2)):
+                return show1 == show2
+            default:
+                return false
+            }
+        }
+    }
+    
+    enum TimeFilter: String, CaseIterable {
+        case week = "W"
+        case month = "M"
+        case threeMonths = "3M"
+        case sixMonths = "6M"
+        case year = "Y"
         
         var component: Calendar.Component {
             switch self {
             case .year: return .year
-            case .month: return .month
+            case .month, .threeMonths, .sixMonths: return .month
             case .week: return .weekOfYear
             }
         }
-    }
-    
-    struct CustomDate: Identifiable, Hashable {
-        var id: String { formatted ?? UUID().uuidString }
         
-        let month: Int?
-        let year: Int
-        
-        var formatted: String? {
-            if let month, let monthName = monthNames?[month-1] {
-                return monthName.capitalized + " \(year)"
+        var multiplier: Int {
+            switch self {
+            case .threeMonths: return 3
+            case .sixMonths: return 6
+            default: return 1
             }
-            return "\(year)"
         }
-        
-        static let now: Self = .init(
-            month: DateInRegion(region: .current).month,
-            year: DateInRegion(region: .current).year
-        )
-        
-        private let monthNames = DateFormatter().monthSymbols
-    }
-    
-    struct SingleWatch: Identifiable {
-        enum GroupType: String {
-            case movies = "Movies"
-            case shows = "Shows"
-        }
-        
-        let id = UUID()
-        let item: ChartRepresentable
-        let group: GroupType
-
-        init(item: ChartRepresentable, group: GroupType) {
-            self.item = item
-            self.group = group
-        }
-    }
-}
-
-struct ChartRepresentable {
-    let title: String
-    let subtitle: String?
-    let image: String
-    let lastWatched: Date
-}
-
-extension Movie {
-    func asChartRepresentable() -> ChartRepresentable {
-        .init(title: title, subtitle: nil, image: image, lastWatched: lastWatched)
-    }
-}
-
-extension TVShow.Episode {
-    func asChartRepresentable(parent: TVShow) -> ChartRepresentable {
-        .init(
-            title: episode + " - " + name,
-            subtitle: parent.title,
-            image: parent.image,
-            lastWatched: lastWatched
-        )
     }
 }

@@ -87,10 +87,8 @@ struct MainView: View {
                     LinearGradient(gradient: .init(colors: [Color("bg_color"), .purple.opacity(0.5)]), startPoint: .bottomTrailing, endPoint: .topLeading)
                         .opacity(0.5)
                         .ignoresSafeArea()
-                    StatsViewV2()
+                    StatsView()
                         .environmentObject(dataLoader)
-                    //StatsView()
-                        //.environmentObject(dataLoader)
                 }
             }.environment(\.colorScheme, .dark)
         }
