@@ -87,13 +87,8 @@ struct MainView: View {
                     LinearGradient(gradient: .init(colors: [Color("bg_color"), .purple.opacity(0.5)]), startPoint: .bottomTrailing, endPoint: .topLeading)
                         .opacity(0.5)
                         .ignoresSafeArea()
-                    switch dataLoader.state {
-                    case .success(let response):
-                        StatsViewV2(viewModel: .init(apiResponse: response))
-                    default:
-                        EmptyView()
-                    }
-                
+                    StatsViewV2()
+                        .environmentObject(dataLoader)
                     //StatsView()
                         //.environmentObject(dataLoader)
                 }

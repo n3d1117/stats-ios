@@ -15,16 +15,17 @@ import Charts
     // Data
     @Published private(set) var globalChartData: [ChartData] = []
     @Published private(set) var globalDateRange: DateRange = .now
+    @Published private(set) var filteredDateRange: DateRange = .now
     
     // UI
     @Published var timeFilter: TimeFilter = .threeMonths { didSet { shiftIndex = 0 } }
-    @Published var shiftIndex: Int = 0
+    @Published var shiftIndex: Int = 0 { didSet { recalculateFilteredDateRange() } }
     
-    let apiResponse: APIResponse
-    
+    // Private vars
+    private var apiResponse: APIResponse = .empty
     private let currentDate = DateInRegion(region: .current)
     
-    init(apiResponse: APIResponse) {
+    func generateData(with apiResponse: APIResponse) {
         self.apiResponse = apiResponse
         
         let moviesData: [ChartData] = apiResponse.movies
@@ -36,11 +37,42 @@ import Charts
             .filter({ $0.lastWatched.dateComponents.year! >= 2021 })
             .map { ChartData(id: $0.id, date: $0.lastWatched, group: .shows, dataType: .episode($0)) }
         
+        // data
         self.globalChartData = (moviesData + showsData)
         
+        // range
         let allDates = globalChartData.map(\.date).sorted()
         if let minDate = allDates.min(), let maxDate = allDates.max() {
             self.globalDateRange = .init(lower: minDate, upper: maxDate)
+        }
+        
+        recalculateFilteredDateRange()
+    }
+    
+    // Calculate new date range based on UI filters
+    func recalculateFilteredDateRange() {
+        if shiftIndex != .zero {
+            let times = abs(shiftIndex-1)
+            let multiplier = shiftIndex > 0 ? timeFilter.multiplier : -timeFilter.multiplier
+            
+            var startDate: Date = currentDate
+                .dateByAdding(multiplier*times, timeFilter.component)
+                .date
+            var endDate = startDate
+                .dateByAdding(-multiplier, timeFilter.component)
+                .date
+            
+            startDate = globalDateRange.lower <= startDate ? startDate : globalDateRange.lower
+            endDate = globalDateRange.upper >= endDate ? endDate : globalDateRange.upper
+            
+            filteredDateRange = .init(lower: startDate.dateAtStartOf(mainChartUnit), upper: endDate.dateAtEndOf(mainChartUnit))
+        } else {
+            let startDate: Date = currentDate
+                .dateByAdding(-timeFilter.multiplier, timeFilter.component)
+                .dateAtStartOf(mainChartUnit)
+                .date
+            let endDate = currentDate.dateAtEndOf(mainChartUnit).date
+            filteredDateRange = .init(lower: startDate, upper: endDate)
         }
     }
 }
@@ -49,19 +81,19 @@ import Charts
 extension StatsViewModelV2 {
     
     var filteredGridListData: [GridListData] {
-        var f: [GridListData] = []
+        var gridData: [GridListData] = []
         
         var eps: [TVShow.Episode] = []
         for d in filteredChartData {
             switch d.dataType {
             case .movie(let movie):
-                f.append(.init(.movie(movie)))
+                gridData.append(.init(.movie(movie)))
             case .episode(let episode):
                 eps.append(episode)
             }
         }
         
-        let dd: [TVShow] = Dictionary(grouping: eps, by: { $0.parentShowID }).compactMap({ showID, episodes in
+        let groupedShows: [TVShow] = Dictionary(grouping: eps, by: { $0.parentShowID }).compactMap({ showID, episodes in
             if var fullShow = apiResponse.tvShows.first(where: { $0.id == showID }) {
                 fullShow.episodes = episodes
                 return fullShow
@@ -70,43 +102,12 @@ extension StatsViewModelV2 {
             }
         })
         
-        dd.forEach({ f.append(.init(.show($0))) })
-        
-        return f.sorted(by: { $0.date > $1.date })
+        groupedShows.forEach({ gridData.append(.init(.show($0))) })
+        return gridData.sorted(by: { $0.date > $1.date })
     }
     
     var filteredChartData: [ChartData] {
         globalChartData.filter({ filteredDateRange.range.contains($0.date) })
-    }
-    
-    var filteredDateRange: DateRange {
-        if shiftIndex != .zero {
-            
-            let times = abs(shiftIndex-1)
-            let multiplier = shiftIndex > 0 ? timeFilter.multiplier : -timeFilter.multiplier
-            
-            var startDate: Date = currentDate
-                .dateByAdding(multiplier*times, timeFilter.component)
-                .date
-            
-            var endDate = startDate
-                .dateByAdding(-multiplier, timeFilter.component)
-                .date
-            
-            startDate = globalDateRange.lower <= startDate ? startDate : globalDateRange.lower
-            endDate = globalDateRange.upper >= endDate ? endDate : globalDateRange.upper
-            
-            return .init(lower: startDate.dateAtStartOf(mainChartUnit), upper: endDate.dateAtEndOf(mainChartUnit))
-        }
-        
-        let startDate: Date = currentDate
-            .dateByAdding(-timeFilter.multiplier, timeFilter.component)
-            .dateAtStartOf(mainChartUnit)
-            .date
-        
-        let endDate = currentDate.dateAtEndOf(mainChartUnit).date
-        
-        return .init(lower: startDate, upper: endDate)
     }
     
     var previousEnabled: Bool {
@@ -164,7 +165,7 @@ extension StatsViewModelV2 {
         let upper: Date
         
         var range: ClosedRange<Date> {
-            lower...upper
+            lower > upper ? upper...lower : lower...upper
         }
         
         static let now: Self = .init(lower: .now, upper: .now)

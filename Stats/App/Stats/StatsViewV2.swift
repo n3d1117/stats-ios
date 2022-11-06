@@ -12,47 +12,63 @@ import Networking
 
 struct StatsViewV2: View {
     
-    @StateObject private var viewModel: StatsViewModelV2
+    @StateObject private var viewModel = StatsViewModelV2()
         
-    init(viewModel: @autoclosure @escaping () -> StatsViewModelV2) {
-        _viewModel = StateObject(wrappedValue: viewModel())
-    }
+    @EnvironmentObject var dataLoader: NetworkDataLoader
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                
-                HStack(alignment: .bottom) {
-                    Text("Stats")
-                        .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    Spacer()
-                    miniChartView
-                        .frame(height: 20)
-                        .padding(.horizontal, 8)
-                        .offset(y: -5)
-                        .animation(.default.delay(0.5), value: viewModel.timeFilter)
-                        .animation(.default.delay(0.5), value: viewModel.shiftIndex)
+        ZStack {
+            switch dataLoader.state {
+
+            case .success(let response):
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        
+                        HStack(alignment: .bottom) {
+                            Text("Stats")
+                                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                            Spacer()
+                            miniChartView
+                                .frame(height: 20)
+                                .padding(.horizontal, 8)
+                                .offset(y: -5)
+                                .animation(.default.delay(0.5), value: viewModel.timeFilter)
+                                .animation(.default.delay(0.5), value: viewModel.shiftIndex)
+                        }
+                        
+                        timeFilterView
+                        
+                        dateRangeView
+                            .padding(.vertical)
+                        
+                        chartView
+                            .frame(height: 300)
+                            .animation(.default, value: viewModel.filteredDateRange)
+                        
+                        Text("Details")
+                            .font(.system(size: 20, weight: .semibold, design: .rounded))
+                            .padding(.top)
+                        
+                        chartListData
+                            .animation(.default, value: viewModel.filteredDateRange)
+                        
+                    }
+                    .padding()
                 }
-                
-                timeFilterView
-                
-                dateRangeView
-                    .padding(.vertical)
-                
-                chartView
-                    .frame(height: 300)
-                    .animation(.default, value: viewModel.filteredDateRange)
-                
-                Text("Details")
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .padding(.top)
-                
-                chartListData
-                    .animation(.default, value: viewModel.filteredDateRange)
-                
+                .task {
+                    viewModel.generateData(with: response)
+                }
+
+            case .loading:
+                ProgressView()
+
+            case .failed(let error):
+                GenericErrorView(error: error.localizedDescription) {
+                    await dataLoader.load()
+                }
             }
-            .padding()
-        }
+        }.animation(.default, value: dataLoader.state)
+        
     }
     
     private var timeFilterView: some View {
@@ -221,18 +237,11 @@ struct StatsViewV2_Previews: PreviewProvider {
         @StateObject private var dataLoader = NetworkDataLoader()
 
         var body: some View {
-            VStack {
-                switch dataLoader.state {
-                case .success(let response):
-                    StatsViewV2(viewModel: .init(apiResponse: response))
-                default:
-                    ProgressView()
+            StatsViewV2()
+                .task {
+                    DependencyValues[\.persistenceService] = .mock
+                    await dataLoader.load()
                 }
-            }
-            .task {
-                DependencyValues[\.persistenceService] = .mock
-                await dataLoader.load()
-            }
         }
     }
     
