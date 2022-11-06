@@ -43,14 +43,14 @@ struct StatsViewV2: View {
                         
                         chartView
                             .frame(height: 300)
-                            .animation(.default, value: viewModel.filteredDateRange)
+                            .animation(.default, value: viewModel.filteredChartData)
                         
                         Text("Details")
                             .font(.system(size: 20, weight: .semibold, design: .rounded))
                             .padding(.top)
                         
                         chartListData
-                            .animation(.default, value: viewModel.filteredDateRange)
+                            .animation(.default, value: viewModel.filteredGridListData)
                         
                     }
                     .padding()
@@ -166,6 +166,14 @@ struct StatsViewV2: View {
                             .foregroundColor(.secondary)
                     }
             }
+            
+            if let gestureRange = viewModel.gestureRange {
+                RectangleMark(
+                    xStart: .value("Range start", gestureRange.lower),
+                    xEnd: .value("Range end", gestureRange.upper)
+                )
+                .foregroundStyle(.gray.opacity(0.2))
+            }
         }
         .chartXScale(domain: viewModel.filteredDateRange.range)
         .chartYScale(domain: .automatic(dataType: Int.self) { domain in
@@ -200,20 +208,66 @@ struct StatsViewV2: View {
                     .font(.caption)
             }
             .frame(minWidth: 200, alignment: .trailing)
+            .padding(.bottom, 5)
+        }
+        .chartOverlay { proxy in
+            GeometryReader { reader in
+                Rectangle().fill(.clear).contentShape(Rectangle())
+                    .gesture(DragGesture()
+                        .onChanged { value in
+                            let startX = value.startLocation.x - reader[proxy.plotAreaFrame].origin.x
+                            let currentX = value.location.x - reader[proxy.plotAreaFrame].origin.x
+                            if let startDate: Date = proxy.value(atX: startX),
+                               let currentDate: Date = proxy.value(atX: currentX),
+                               startDate != currentDate,
+                               viewModel.filteredDateRange.contains(startDate),
+                               viewModel.filteredDateRange.contains(currentDate) {
+                                viewModel.gestureRange = .init(lower: startDate, upper: currentDate)
+                            }
+                        }
+                    )
+                    .onTapGesture { location in
+                        let xPosition = location.x - reader[proxy.plotAreaFrame].origin.x
+                        if let selectedDate: Date = proxy.value(atX: xPosition) {
+                            viewModel.tapGestureDate = selectedDate
+                        }
+                    }
+            }
+        }
+        .chartOverlay(alignment: .topLeading) { _ in
+            if let additionalText = viewModel.additionalText {
+                HStack(spacing: 5) {
+                    Button {
+                        viewModel.clearSelection()
+                    } label: {
+                        Text("Clear")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                            .padding(.vertical, 3)
+                            .padding(.horizontal, 8)
+                            .background(.secondary.opacity(0.3), in: Capsule(style: .continuous))
+                    }
+                    .foregroundColor(.secondary.opacity(0.8))
+                    
+                    Text(additionalText)
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                }
+            }
         }
     }
     
-    @ViewBuilder private var chartListData: some View {
-        if viewModel.filteredGridListData.isEmpty {
-            VStack {
-                Text("No content for this period")
-                    .foregroundColor(.secondary)
-                    .font(.subheadline)
-            }
-            .frame(height: 150)
-            .frame(maxWidth: .infinity)
-        } else {
-            LazyVStack(alignment: .leading) {
+    private var chartListData: some View {
+        VStack(alignment: .leading) {
+            if viewModel.filteredGridListData.isEmpty {
+                VStack {
+                    Text("No content for this period")
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                }
+                .frame(height: 150)
+                .frame(maxWidth: .infinity)
+            } else {
                 GridView {
                     ForEach(viewModel.filteredGridListData) { item in
                         ChartGridItemView(
@@ -225,8 +279,6 @@ struct StatsViewV2: View {
                 }
             }
         }
-        //.animation(.default, value: viewModel.gestureRange)
-        //.animation(.default, value: viewModel.gestureTap)
     }
 }
 
@@ -238,6 +290,7 @@ struct StatsViewV2_Previews: PreviewProvider {
 
         var body: some View {
             StatsViewV2()
+                .environmentObject(dataLoader)
                 .task {
                     DependencyValues[\.persistenceService] = .mock
                     await dataLoader.load()

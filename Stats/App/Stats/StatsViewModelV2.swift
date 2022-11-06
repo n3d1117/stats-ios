@@ -20,6 +20,8 @@ import Charts
     // UI
     @Published var timeFilter: TimeFilter = .threeMonths { didSet { shiftIndex = 0 } }
     @Published var shiftIndex: Int = 0 { didSet { recalculateFilteredDateRange() } }
+    @Published var gestureRange: DateRange?
+    @Published var tapGestureDate: Date?
     
     // Private vars
     private var apiResponse: APIResponse = .empty
@@ -51,6 +53,8 @@ import Charts
     
     // Calculate new date range based on UI filters
     func recalculateFilteredDateRange() {
+        gestureRange = nil
+        tapGestureDate = nil
         if shiftIndex != .zero {
             let times = abs(shiftIndex-1)
             let multiplier = shiftIndex > 0 ? timeFilter.multiplier : -timeFilter.multiplier
@@ -75,6 +79,11 @@ import Charts
             filteredDateRange = .init(lower: startDate, upper: endDate)
         }
     }
+    
+    func clearSelection() {
+        if tapGestureDate != nil { tapGestureDate = nil }
+        if gestureRange != nil { gestureRange = nil }
+    }
 }
 
 // MARK: - Computed vars
@@ -83,8 +92,17 @@ extension StatsViewModelV2 {
     var filteredGridListData: [GridListData] {
         var gridData: [GridListData] = []
         
+        var source = filteredChartData
+        if let _ = tapGestureDate {
+            clearSelection()
+        }
+        if let gestureRange {
+            if tapGestureDate != nil { tapGestureDate = nil }
+            source = source.filter({ gestureRange.contains($0.date) })
+        }
+        
         var eps: [TVShow.Episode] = []
-        for d in filteredChartData {
+        for d in source {
             switch d.dataType {
             case .movie(let movie):
                 gridData.append(.init(.movie(movie)))
@@ -119,7 +137,9 @@ extension StatsViewModelV2 {
     }
     
     var dateIntervalFormatted: String {
-        dateIntervalFormatter.string(from: filteredDateRange.lower, to: filteredDateRange.upper)
+        if let tapGestureDate { return tapGestureDate.formatted(date: .long, time: .omitted) }
+        let range: DateRange = gestureRange ?? filteredDateRange
+        return dateIntervalFormatter.string(from: range.lower, to: range.upper).capitalized
     }
     
     var xAxisStride: Calendar.Component {
@@ -146,6 +166,13 @@ extension StatsViewModelV2 {
         case .threeMonths: return .weekOfYear
         case .month, .week: return .day
         }
+    }
+    
+    var additionalText: String? {
+        if (gestureRange != nil || tapGestureDate != nil) {
+            return "\(filteredGridListData.count) selected"
+        }
+        return nil
     }
     
     // MARK: - Private

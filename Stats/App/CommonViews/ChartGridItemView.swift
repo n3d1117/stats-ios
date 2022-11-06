@@ -33,6 +33,7 @@ struct ChartGridItemView: View {
 
             Text(subtitle ?? "")
                 .font(.system(size: 13))
+                .lineLimit(1)
                 .foregroundColor(.secondary)
                 .offset(y: 2)
         }
