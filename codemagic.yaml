@@ -1,0 +1,23 @@
+workflows:
+  build:
+    name: iOS Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    scripts:
+      - name: Run tests
+        script: |
+          xcode-project run-tests \
+            --project "Stats.xcodeproj" \
+            --scheme Stats \
+            --target StatsTests \
+            --device "iPhone 14 Pro"
+      - name: Build unsigned
+        script: |
+          xcodebuild build \
+            -project "Stats.xcodeproj" \
+            -scheme "Stats" \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.0' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
