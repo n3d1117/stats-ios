@@ -53,7 +53,7 @@ struct MainView: View {
         }
         .environmentObject(dataLoader)
         .environment(\.layoutType, layoutType)
-        .environment(\.colorScheme, .dark)
+        .preferredColorScheme(.dark)
         .task {
             await dataLoader.load()
         }
@@ -90,7 +90,7 @@ struct MainView: View {
                     StatsView()
                         .environmentObject(dataLoader)
                 }
-            }.environment(\.colorScheme, .dark)
+            }
         }
     }
 
