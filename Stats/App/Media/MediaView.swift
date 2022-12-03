@@ -153,11 +153,19 @@ struct MediaView: View {
             }
         }
         .sheet(isPresented: $showDetails, content: {
+            let hasEpisodes = !((selection as? TVShow)?.episodes.isEmpty ?? true)
             MediaDetailView(media: $selection)
-                .readSize(onChange: { size in
-                    sheetContentHeight = size.height
+                .if(hasEpisodes, transform: { view in
+                    view
+                        .presentationDetents([.medium, .large])
                 })
-                .presentationDetents([.height(sheetContentHeight)])
+                .if(!hasEpisodes, transform: { view in
+                    view
+                        .readSize(onChange: { size in
+                            sheetContentHeight = size.height
+                        })
+                        .presentationDetents([.height(sheetContentHeight)])
+                })
         })
     }
 }

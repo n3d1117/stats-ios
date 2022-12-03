@@ -12,8 +12,9 @@ import NukeUI
 struct MediaDetailView: View {
     
     @StateObject private var viewModel = MediaDetailViewModel()
-    @Binding var media: Media?
     @Environment(\.dismiss) private var dismiss
+    
+    @Binding var media: Media?
     
     var body: some View {
         ZStack {
@@ -24,9 +25,48 @@ struct MediaDetailView: View {
             if let media {
                 VStack(alignment: .leading) {
                     headerView(for: media)
+                        .padding(.horizontal)
+                    
+                    if let show = media as? TVShow, !show.episodes.isEmpty {
+                        Text("\(show.episodes.count) episodes")
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal)
+                            .padding(.top, 6)
+                        
+                        ScrollView(showsIndicators: false) {
+                            Divider().padding(.horizontal)
+                            
+                            ForEach(show.episodes) { episode in
+                                HStack {
+                                    LazyImage(url: show.imageURL) { state in
+                                        if let image = state.image {
+                                            image
+                                        } else {
+                                            Image(systemName: "photo")
+                                                .resizable()
+                                                .redacted(reason: .placeholder)
+                                        }
+                                    }
+                                    .aspectRatio(show.aspectRatio, contentMode: .fit)
+                                    .frame(width: 27)
+                                    .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text("\(episode.episode) - \(episode.name)")
+                                        Text("\(episode.lastWatched.formatted())")
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding(.vertical, 2)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                Divider()
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 25)
+                .padding(.top, 25)
             }
         }
         .task {

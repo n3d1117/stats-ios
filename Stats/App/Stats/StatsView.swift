@@ -19,6 +19,7 @@ struct StatsView: View {
     
     @State private var selection: Media? = nil
     @State private var showDetails: Bool = false
+    @State private var sheetContentHeight: CGFloat = 190
     
     var body: some View {
         VStack(spacing: 0) {
@@ -318,8 +319,19 @@ struct StatsView: View {
                     }
                 }
                 .sheet(isPresented: $showDetails, content: {
+                    let hasEpisodes = !((selection as? TVShow)?.episodes.isEmpty ?? true)
                     MediaDetailView(media: $selection)
-                        .presentationDetents([.medium, .large])
+                        .if(hasEpisodes, transform: { view in
+                            view
+                                .presentationDetents([.medium, .large])
+                        })
+                        .if(!hasEpisodes, transform: { view in
+                            view
+                                .readSize(onChange: { size in
+                                    sheetContentHeight = size.height
+                                })
+                                .presentationDetents([.height(sheetContentHeight)])
+                        })
                 })
             }
         }
