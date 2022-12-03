@@ -14,37 +14,44 @@ struct MediaListItemView: View {
     let imageURL: URL?
     let aspectRatio: CGFloat
     let circle: Bool
+    
+    let onTap: () -> Void
 
     var body: some View {
-        HStack {
-            LazyImage(url: imageURL) { state in
-                if let image = state.image {
-                    image
-                } else {
-                    Image(systemName: "photo")
-                        .resizable()
-                        .redacted(reason: .placeholder)
+        Button {
+            onTap()
+        } label: {
+            HStack {
+                LazyImage(url: imageURL) { state in
+                    if let image = state.image {
+                        image
+                    } else {
+                        Image(systemName: "photo")
+                            .resizable()
+                            .redacted(reason: .placeholder)
+                    }
                 }
-            }
-            .aspectRatio(aspectRatio, contentMode: .fit)
-            .frame(height: 60)
-            .if(circle, transform: { $0.clipShape(Circle()) })
-            .if(!circle, transform: { $0.clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous)) })
+                .aspectRatio(aspectRatio, contentMode: .fit)
+                .frame(height: 60)
+                .if(circle, transform: { $0.clipShape(Circle()) })
+                .if(!circle, transform: { $0.clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous)) })
 
-            VStack(alignment: .leading, spacing: 7) {
-                Text(title)
-                    .font(.system(size: 15))
-                    .lineLimit(1)
-
-                if let subtitle {
-                    Text(subtitle)
+                VStack(alignment: .leading, spacing: 7) {
+                    Text(title)
+                        .font(.system(size: 15))
                         .lineLimit(1)
-                        .font(.system(size: 13))
-                        .foregroundColor(.secondary)
+
+                    if let subtitle {
+                        Text(subtitle)
+                            .lineLimit(1)
+                            .font(.system(size: 13))
+                            .foregroundColor(.secondary)
+                    }
                 }
+                Spacer()
             }
-            Spacer()
-        }
+            .contentShape(Rectangle())
+        }.buttonStyle(BounceButtonStyle())
     }
 }
 
@@ -56,7 +63,8 @@ extension MediaListItemView {
         subtitle: "Subtitle",
         imageURL: nil,
         aspectRatio: 0.7,
-        circle: false
+        circle: false,
+        onTap: {}
     )
 
     static let mockRounded: Self = MediaListItemView(
@@ -64,7 +72,8 @@ extension MediaListItemView {
         subtitle: nil,
         imageURL: nil,
         aspectRatio: 1,
-        circle: true
+        circle: true,
+        onTap: {}
     )
 }
 

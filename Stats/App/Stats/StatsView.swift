@@ -9,6 +9,7 @@ import SwiftUI
 import DependencyInjection
 import Charts
 import Networking
+import Models
 
 struct StatsView: View {
     
@@ -16,69 +17,79 @@ struct StatsView: View {
     @EnvironmentObject var dataLoader: NetworkDataLoader
     @Environment(\.dismiss) private var dismiss
     
+    @State private var selection: Media? = nil
+    @State private var showDetails: Bool = false
+    
     var body: some View {
-        ZStack {
-            switch dataLoader.state {
+        VStack(spacing: 0) {
+            
+            titleView
+                .padding()
+            
+            Divider()
+            
+            ZStack {
+                switch dataLoader.state {
 
-            case .success(let response):
-                ScrollView {
-                    VStack(alignment: .leading) {
-                        
-                        HStack {
-                            Text("Stats")
+                case .success(let response):
+                    ScrollView {
+                        VStack(alignment: .leading) {
+                            
+                            timeFilterView
+                                .padding(.top)
+                            
+                            dateRangeView
+                                .padding(.vertical, 10)
+                            
+                            chartView
+                                .frame(height: 300)
+                                .animation(.default, value: viewModel.filteredChartData)
+                            
+                            Text("Details")
                                 .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                .padding(.top)
                             
-                            Spacer()
+                            chartListData
+                                .animation(.default, value: viewModel.filteredGridListData)
                             
-                            miniChartView
-                                .frame(height: 20)
-                                .padding(.horizontal, 30)
-                                .offset(y: -2)
-                                .animation(.default.delay(0.5), value: viewModel.timeFilter)
-                                .animation(.default.delay(0.5), value: viewModel.shiftIndex)
-                            
-                            Spacer()
-                            
-                            closeButton
                         }
-                        
-                        Divider()
-                            .padding(.horizontal, -15)
-                        
-                        timeFilterView
-                            .padding(.top)
-                        
-                        dateRangeView
-                            .padding(.vertical, 10)
-                        
-                        chartView
-                            .frame(height: 300)
-                            .animation(.default, value: viewModel.filteredChartData)
-                        
-                        Text("Details")
-                            .font(.system(size: 22, weight: .semibold, design: .rounded))
-                            .padding(.top)
-                        
-                        chartListData
-                            .animation(.default, value: viewModel.filteredGridListData)
-                        
+                        .padding()
                     }
-                    .padding()
-                }
-                .task {
-                    viewModel.generateData(with: response)
-                }
+                    .task {
+                        viewModel.generateData(with: response)
+                    }
 
-            case .loading:
-                ProgressView()
+                case .loading:
+                    ProgressView()
 
-            case .failed(let error):
-                GenericErrorView(error: error.localizedDescription) {
-                    await dataLoader.load()
+                case .failed(let error):
+                    GenericErrorView(error: error.localizedDescription) {
+                        await dataLoader.load()
+                    }
                 }
-            }
-        }.animation(.default, value: dataLoader.state)
+            }.animation(.default, value: dataLoader.state)
+        }
         
+    }
+    
+    private var titleView: some View {
+        HStack {
+            Text("Stats")
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
+            
+            Spacer()
+            
+            miniChartView
+                .frame(height: 20)
+                .padding(.horizontal, 30)
+                .offset(y: -2)
+                .animation(.default.delay(0.5), value: viewModel.timeFilter)
+                .animation(.default.delay(0.5), value: viewModel.shiftIndex)
+            
+            Spacer()
+            
+            closeButton
+        }
     }
     
     private var closeButton: some View {
@@ -89,7 +100,6 @@ struct StatsView: View {
                 .font(.system(size: 17, weight: .semibold, design: .rounded))
                 .foregroundColor(.secondary.opacity(0.7))
         }
-        
     }
     
     private var timeFilterView: some View {
@@ -296,13 +306,21 @@ struct StatsView: View {
             } else {
                 GridView {
                     ForEach(viewModel.filteredGridListData) { item in
-                        ChartGridItemView(
+                        MediaGridItemView(
                             title: item.title,
                             subtitle: item.subtitle,
-                            imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded)
-                        )
+                            imageURL: item.imageURL,
+                            aspectRatio: 0.7,
+                            circle: false) {
+                                self.selection = item.asMedia
+                                self.showDetails = true
+                            }
                     }
                 }
+                .sheet(isPresented: $showDetails, content: {
+                    MediaDetailView(media: $selection)
+                        .presentationDetents([.medium, .large])
+                })
             }
         }
     }

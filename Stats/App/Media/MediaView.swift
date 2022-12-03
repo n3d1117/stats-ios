@@ -14,8 +14,11 @@ struct MediaView: View {
     let mediaType: Route
 
     @EnvironmentObject var dataLoader: NetworkDataLoader
-
     @Environment(\.layoutType) var layoutType
+    
+    @State private var selection: Media? = nil
+    @State private var showDetails: Bool = false
+    @State private var sheetContentHeight: CGFloat = 190
 
     var body: some View {
         ZStack {
@@ -144,8 +147,18 @@ struct MediaView: View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
-            MediaContentView(media: media)
+            MediaContentView(media: media) { item in
+                self.selection = item
+                self.showDetails = true
+            }
         }
+        .sheet(isPresented: $showDetails, content: {
+            MediaDetailView(media: $selection)
+                .readSize(onChange: { size in
+                    sheetContentHeight = size.height
+                })
+                .presentationDetents([.height(sheetContentHeight)])
+        })
     }
 }
 

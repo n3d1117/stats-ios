@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "dominantcolor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/indragiek/DominantColor",
+      "state" : {
+        "revision" : "fd5e72612096971484549341f34aff6af2779ee8",
+        "version" : "0.2.1"
+      }
+    },
+    {
       "identity" : "nuke",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/Nuke.git",

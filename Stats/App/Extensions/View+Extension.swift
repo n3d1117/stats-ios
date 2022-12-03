@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - Conditional modifier
 extension View {
     /// Applies the given transform if the given condition evaluates to `true`.
     /// - Parameters:
@@ -19,5 +20,27 @@ extension View {
         } else {
             self
         }
+    }
+}
+
+// MARK: - View size reader
+private struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
+}
+extension View {
+    func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
+        background(
+            self
+                .fixedSize(horizontal: false, vertical: true)
+                .background(
+                    GeometryReader { geometryProxy in
+                        Color.clear
+                            .preference(key: SizePreferenceKey.self, value: geometryProxy.size)
+                    }
+                )
+                .hidden()
+                .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
+        )
     }
 }

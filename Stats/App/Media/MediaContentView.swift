@@ -12,6 +12,7 @@ import SwiftUI
 struct MediaContentView: View {
 
     let media: [any Media]
+    let onTap: (Media) -> Void
 
     @Environment(\.layoutType) var layoutType
 
@@ -24,10 +25,11 @@ struct MediaContentView: View {
                         MediaGridItemView(
                             title: item.title,
                             subtitle: item.subtitle,
-                            imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded),
+                            imageURL: item.imageURL,
                             aspectRatio: item.aspectRatio,
-                            circle: item.circle
-                        )
+                            circle: item.circle) {
+                                onTap(item)
+                            }
                     }
                 }
             case .list:
@@ -36,10 +38,11 @@ struct MediaContentView: View {
                         MediaListItemView(
                             title: item.title,
                             subtitle: item.subtitle,
-                            imageURL: URL(string: (API.baseImageUrl + item.image).urlEncoded),
+                            imageURL: item.imageURL,
                             aspectRatio: item.aspectRatio,
-                            circle: item.circle
-                        )
+                            circle: item.circle) {
+                                onTap(item)
+                            }
                     }
                 }
             }

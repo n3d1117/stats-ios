@@ -110,9 +110,8 @@ extension StatsViewModel {
             if var fullShow = apiResponse.tvShows.first(where: { $0.id == showID }) {
                 fullShow.episodes = episodes
                 return fullShow
-            } else {
-                return nil
             }
+            return nil
         })
         
         groupedShows.forEach({ gridData.append(.init(.show($0))) })
@@ -189,8 +188,7 @@ extension StatsViewModel {
         }
         
         static func == (lhs: DateRange, rhs: DateRange) -> Bool {
-            lhs.lower.compare(.isSameDay(rhs.lower)) &&
-            lhs.upper.compare(.isSameDay(rhs.upper))
+            lhs.lower.compare(.isSameDay(rhs.lower)) && lhs.upper.compare(.isSameDay(rhs.upper))
         }
     }
     
@@ -262,10 +260,24 @@ extension StatsViewModel {
             }
         }
         
+        var imageURL: URL? {
+            switch item {
+            case .movie(let movie): return movie.imageURL
+            case .show(let show): return show.imageURL
+            }
+        }
+        
         var subtitle: String {
             switch item {
             case .movie(let movie): return movie.lastWatched.formatted(date: .abbreviated, time: .omitted)
             case .show(let show): return show.episodes.count == 1 ? "\(show.episodes.count) episode" : "\(show.episodes.count) episodes"
+            }
+        }
+        
+        var asMedia: Media {
+            switch item {
+            case .movie(let movie): return movie
+            case .show(let show): return show
             }
         }
         

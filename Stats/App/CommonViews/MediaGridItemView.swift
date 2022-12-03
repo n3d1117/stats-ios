@@ -14,34 +14,42 @@ struct MediaGridItemView: View {
     let imageURL: URL?
     let aspectRatio: CGFloat
     let circle: Bool
+    
+    let onTap: () -> Void
 
     var body: some View {
-        VStack(alignment: circle ? .center : .leading) {
-            LazyImage(url: imageURL) { state in
-                if let image = state.image {
-                    image
-                } else {
-                    Image(systemName: "photo")
-                        .resizable()
-                        .redacted(reason: .placeholder)
+        
+        Button {
+            onTap()
+        } label: {
+            VStack(alignment: circle ? .center : .leading) {
+                LazyImage(url: imageURL) { state in
+                    if let image = state.image {
+                        image
+                    } else {
+                        Image(systemName: "photo")
+                            .resizable()
+                            .redacted(reason: .placeholder)
+                    }
+                }
+                .aspectRatio(aspectRatio, contentMode: .fill)
+                .if(circle, transform: { $0.clipShape(Circle()) })
+                .if(!circle, transform: { $0.clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous)) })
+
+                Text(title)
+                    .font(.system(size: 14))
+                    .lineLimit(1)
+
+                if let subtitle {
+                    Text(subtitle)
+                        .lineLimit(1)
+                        .font(.system(size: 13))
+                        .foregroundColor(.secondary)
+                        .offset(y: 2)
                 }
             }
-            .aspectRatio(aspectRatio, contentMode: .fill)
-            .if(circle, transform: { $0.clipShape(Circle()) })
-            .if(!circle, transform: { $0.clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous)) })
-
-            Text(title)
-                .font(.system(size: 14))
-                .lineLimit(1)
-
-            if let subtitle {
-                Text(subtitle)
-                    .lineLimit(1)
-                    .font(.system(size: 13))
-                    .foregroundColor(.secondary)
-                    .offset(y: 2)
-            }
         }
+        .buttonStyle(BounceButtonStyle())
     }
 }
 
@@ -53,7 +61,8 @@ extension MediaGridItemView {
         subtitle: "Subtitle",
         imageURL: nil,
         aspectRatio: 0.7,
-        circle: false
+        circle: false,
+        onTap: {}
     )
 
     static let mockRounded: Self = MediaGridItemView(
@@ -61,7 +70,8 @@ extension MediaGridItemView {
         subtitle: nil,
         imageURL: nil,
         aspectRatio: 1,
-        circle: true
+        circle: true,
+        onTap: {}
     )
 }
 
