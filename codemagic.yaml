@@ -16,15 +16,6 @@ workflows:
           include: true
           source: true
     scripts:
-      - name: Test
-        script: |
-          #!/bin/sh
-          set -ex
-          xcode-project run-tests \
-            --project "Stats.xcodeproj" \
-            --scheme "Stats" \
-            --test-xcargs "CODE_SIGNING_ALLOWED=NO"
-        test_report: build/ios/test/*.xml
       - name: Build
         script: |
           xcodebuild build \
