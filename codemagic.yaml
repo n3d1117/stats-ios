@@ -3,6 +3,9 @@ workflows:
     name: iOS Build & Test
     max_build_duration: 15
     instance_type: mac_mini_m1
+    environment:
+      groups:
+        - GitHub
     triggering:
       events:
         - push
@@ -36,5 +39,18 @@ workflows:
           cp -r $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphoneos/*.app Payload
           zip -r build.ipa Payload
           rm -rf Payload
+      - name: Publish to GitHub
+        script: |
+          #!/usr/bin/env zsh
+
+          # Publish only for tag builds
+          if [ -z ${CM_TAG} ]; then
+            echo "Not a tag build, will not publish GitHub release"
+            exit 0
+          fi
+
+          gh release create "${CM_TAG}" \
+            --title "Stats ${CM_TAG}" \
+            build.ipa
     artifacts:
       - build.ipa
