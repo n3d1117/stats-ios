@@ -33,8 +33,6 @@ workflows:
       - name: Publish to GitHub
         script: |
           #!/usr/bin/env zsh
-
-          # Publish only for tag builds
           if [ -z ${CM_TAG} ]; then
             echo "Not a tag build, will not publish GitHub release"
             exit 0
