@@ -9,18 +9,17 @@ import DependencyInjection
 import SwiftUI
 
 struct MainView: View {
-
     @StateObject private var dataLoader = NetworkDataLoader()
 
     @State private var selectedRoute: Route = .movies
     @State private var showCharts = false
-    
+
     private let gradientColors: [Route: Color] = [
         .movies: .blue,
         .tvShows: .red,
         .books: .green,
         .music: .orange,
-        .games: .yellow
+        .games: .yellow,
     ]
 
     @AppStorage(MediaLayoutType.storageKey) private var layoutType: MediaLayoutType = .grid
@@ -58,7 +57,7 @@ struct MainView: View {
             await dataLoader.load()
         }
     }
-    
+
     private var gradientColor: Color {
         gradientColors[selectedRoute] ?? .accentColor
     }

@@ -10,12 +10,11 @@ import Models
 import SwiftUI
 
 struct MediaView: View {
-
     let mediaType: Route
 
     @EnvironmentObject var dataLoader: NetworkDataLoader
     @Environment(\.layoutType) var layoutType
-    
+
     @State private var selection: Media? = nil
     @State private var showDetails: Bool = false
     @State private var sheetContentHeight: CGFloat = 190
@@ -23,8 +22,7 @@ struct MediaView: View {
     var body: some View {
         ZStack {
             switch dataLoader.state {
-
-            case .success(let response):
+            case let .success(response):
                 ScrollView {
                     VStack(spacing: 30) {
                         switch mediaType {
@@ -59,7 +57,7 @@ struct MediaView: View {
                     .redacted(reason: .placeholder)
                 }
 
-            case .failed(let error):
+            case let .failed(error):
                 GenericErrorView(error: error.localizedDescription) {
                     await dataLoader.load()
                 }
@@ -70,7 +68,6 @@ struct MediaView: View {
 
     @ViewBuilder
     private func moviesView(_ movies: [Movie]) -> some View {
-
         let recentlyWatched: [Movie] = movies
             .filter { !$0.isFavorite }
             .sorted(by: { $0.lastWatched > $1.lastWatched })
@@ -89,7 +86,6 @@ struct MediaView: View {
 
     @ViewBuilder
     private func showsView(_ shows: [TVShow]) -> some View {
-
         let recentlyWatched: [TVShow] = shows
             .filter { !$0.isFavorite }
             .sorted(by: { $0.lastWatched > $1.lastWatched })
@@ -108,7 +104,6 @@ struct MediaView: View {
 
     @ViewBuilder
     private func booksView(_ books: [Book]) -> some View {
-
         let reading: [Book] = books
             .filter { !$0.isFavorite }
             .filter { $0.reading }
@@ -171,9 +166,7 @@ struct MediaView: View {
 }
 
 struct MediaView_Previews: PreviewProvider {
-
     struct Preview: View {
-
         @StateObject private var dataLoader = NetworkDataLoader()
 
         var body: some View {

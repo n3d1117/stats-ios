@@ -10,7 +10,6 @@ import Models
 import XCTest
 
 @MainActor final class PersistenceServiceTests: XCTestCase {
-
     let movie: Movie = .inception
     let persistenceService = PersistenceService()
 
@@ -27,5 +26,4 @@ import XCTest
         let firstMovie = try XCTUnwrap(persistenceService.persistedResponse.movies.first)
         XCTAssertEqual(firstMovie, movie)
     }
-
 }

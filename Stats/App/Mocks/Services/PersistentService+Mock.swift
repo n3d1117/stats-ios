@@ -8,10 +8,9 @@
 import Models
 
 extension PersistenceService {
-
     class Mock: PersistenceService {
         override var persistedResponse: APIResponse { .empty }
-        override func set(_ response: APIResponse) async throws { }
+        override func set(_: APIResponse) async throws {}
     }
 
     static let mock: PersistenceService = Mock()

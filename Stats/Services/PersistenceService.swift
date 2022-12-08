@@ -10,7 +10,6 @@ import DependencyInjection
 import Models
 
 class PersistenceService {
-
     @StoredValue<APIResponse>(key: "cachedResponse")
     var persistedResponse: APIResponse = .empty
 
@@ -20,9 +19,10 @@ class PersistenceService {
 }
 
 // MARK: - Dependency
+
 extension DependencyValues {
     private struct PersistenceServiceKey: DependencyKey {
-        static var currentValue: PersistenceService = PersistenceService()
+        static var currentValue: PersistenceService = .init()
     }
 
     var persistenceService: PersistenceService {

@@ -10,7 +10,7 @@ import SwiftUI
 struct MediaGridViewMock: View {
     var body: some View {
         GridView {
-            ForEach(0..<30, id: \.self) { _ in
+            ForEach(0 ..< 30, id: \.self) { _ in
                 MediaGridItemView.mock
             }
         }
@@ -20,7 +20,7 @@ struct MediaGridViewMock: View {
 struct MediaListViewMock: View {
     var body: some View {
         VStack {
-            ForEach(0..<30, id: \.self) { _ in
+            ForEach(0 ..< 30, id: \.self) { _ in
                 MediaListItemView.mock
             }
         }
@@ -30,7 +30,7 @@ struct MediaListViewMock: View {
 struct MediaGridCircleViewMock: View {
     var body: some View {
         GridView {
-            ForEach(0..<30, id: \.self) { _ in
+            ForEach(0 ..< 30, id: \.self) { _ in
                 MediaGridItemView.mockRounded
             }
         }
@@ -40,7 +40,7 @@ struct MediaGridCircleViewMock: View {
 struct MediaListCircleViewMock: View {
     var body: some View {
         VStack {
-            ForEach(0..<30, id: \.self) { _ in
+            ForEach(0 ..< 30, id: \.self) { _ in
                 MediaListItemView.mockRounded
             }
         }

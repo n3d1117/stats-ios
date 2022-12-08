@@ -14,7 +14,7 @@ struct MediaListItemView: View {
     let imageURL: URL?
     let aspectRatio: CGFloat
     let circle: Bool
-    
+
     let onTap: () -> Void
 
     var body: some View {
@@ -56,8 +56,8 @@ struct MediaListItemView: View {
 }
 
 // MARK: - Mocks
-extension MediaListItemView {
 
+extension MediaListItemView {
     static let mock: Self = MediaListItemView(
         title: "This is a movie title",
         subtitle: "Subtitle",
@@ -78,6 +78,7 @@ extension MediaListItemView {
 }
 
 // MARK: - Preview
+
 struct MediaListItemView_Previews: PreviewProvider {
     static var previews: some View {
         MediaListItemView.mock

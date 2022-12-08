@@ -3,19 +3,18 @@ import XCTest
 
 @available(iOS 13.0, *)
 final class ModelsTests: XCTestCase {
-
-    let inception: Movie = Movie(
-        id: "1", title: "Inception", lastWatched: Date(), isFavorite: false, isCinema: false, img: "", year: 2_012
+    let inception: Movie = .init(
+        id: "1", title: "Inception", lastWatched: Date(), isFavorite: false, isCinema: false, img: "", year: 2012
     )
-    let cinemaMovie: Movie = Movie(
-        id: "1", title: "Inception", lastWatched: Date(), isFavorite: false, isCinema: true, img: "", year: 2_012
+    let cinemaMovie: Movie = .init(
+        id: "1", title: "Inception", lastWatched: Date(), isFavorite: false, isCinema: true, img: "", year: 2012
     )
-    let boris: TVShow = TVShow(
+    let boris: TVShow = .init(
         id: "1", title: "Boris", lastWatched: Date(), episode: "S1E1", episodes: [], isFavorite: false, img: ""
     )
-    let open: Book = Book(id: "1", title: "Open", author: "Andre Agassi", isFavorite: false, addedAt: Date(), reading: false, img: "")
-    let radiohead: Artist = Artist(id: "1", name: "Radiohead", img: "")
-    let gow: Game = Game(id: "1", name: "God of War", year: 2_018, img: "")
+    let open: Book = .init(id: "1", title: "Open", author: "Andre Agassi", isFavorite: false, addedAt: Date(), reading: false, img: "")
+    let radiohead: Artist = .init(id: "1", name: "Radiohead", img: "")
+    let gow: Game = .init(id: "1", name: "God of War", year: 2018, img: "")
 
     func testMovieMediaConformance() throws {
         let inceptionAsMedia: Media = inception

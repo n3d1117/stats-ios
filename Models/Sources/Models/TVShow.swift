@@ -8,21 +8,20 @@
 import Foundation
 
 public struct TVShow: Codable, Identifiable, Equatable {
-    
     public struct Episode: Codable, Identifiable, Equatable {
-        public var id: String { name + episode + lastWatched.description  }
-        
+        public var id: String { name + episode + lastWatched.description }
+
         public let episode: String
         public let name: String
         public let parentShowID: String
         public let lastWatched: Date
-        
+
         enum CodingKeys: String, CodingKey {
             case episode, name
             case parentShowID = "parent_show_id"
             case lastWatched = "watched_on"
         }
-        
+
         public init(episode: String, name: String, parentShowID: String, lastWatched: Date) {
             self.episode = episode
             self.name = name
@@ -30,7 +29,7 @@ public struct TVShow: Codable, Identifiable, Equatable {
             self.lastWatched = lastWatched
         }
     }
-    
+
     public let id: String
     public let title: String
     public let lastWatched: Date

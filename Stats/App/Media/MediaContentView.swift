@@ -10,7 +10,6 @@ import Networking
 import SwiftUI
 
 struct MediaContentView: View {
-
     let media: [any Media]
     let onTap: (Media) -> Void
 
@@ -27,9 +26,10 @@ struct MediaContentView: View {
                             subtitle: item.subtitle,
                             imageURL: item.imageURL,
                             aspectRatio: item.aspectRatio,
-                            circle: item.circle) {
-                                onTap(item)
-                            }
+                            circle: item.circle
+                        ) {
+                            onTap(item)
+                        }
                     }
                 }
             case .list:
@@ -40,9 +40,10 @@ struct MediaContentView: View {
                             subtitle: item.subtitle,
                             imageURL: item.imageURL,
                             aspectRatio: item.aspectRatio,
-                            circle: item.circle) {
-                                onTap(item)
-                            }
+                            circle: item.circle
+                        ) {
+                            onTap(item)
+                        }
                     }
                 }
             }

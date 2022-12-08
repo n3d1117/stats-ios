@@ -22,9 +22,10 @@ class NetworkService {
 }
 
 // MARK: - Dependency
+
 extension DependencyValues {
     private struct NetworkServiceKey: DependencyKey {
-        static var currentValue: NetworkService = NetworkService()
+        static var currentValue: NetworkService = .init()
     }
 
     var networkService: NetworkService {

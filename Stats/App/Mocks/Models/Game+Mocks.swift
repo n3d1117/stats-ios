@@ -8,5 +8,5 @@
 import Models
 
 public extension Game {
-    static let gow: Self = .init(id: "1", name: "God of War", year: 2_018, img: "god_of_war.webp")
+    static let gow: Self = .init(id: "1", name: "God of War", year: 2018, img: "god_of_war.webp")
 }

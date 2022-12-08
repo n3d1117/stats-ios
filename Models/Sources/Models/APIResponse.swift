@@ -31,13 +31,13 @@ public struct APIResponse: Codable {
 extension APIResponse: Equatable {
     public static func == (lhs: APIResponse, rhs: APIResponse) -> Bool {
         lhs.movies == rhs.movies &&
-        lhs.tvShows == rhs.tvShows &&
-        lhs.books == rhs.books &&
-        lhs.artists == rhs.artists &&
-        lhs.games == rhs.games
+            lhs.tvShows == rhs.tvShows &&
+            lhs.books == rhs.books &&
+            lhs.artists == rhs.artists &&
+            lhs.games == rhs.games
     }
 }
 
-extension APIResponse {
-    public static let empty: Self = .init(movies: [], tvShows: [], books: [], artists: [], games: [])
+public extension APIResponse {
+    static let empty: Self = .init(movies: [], tvShows: [], books: [], artists: [], games: [])
 }

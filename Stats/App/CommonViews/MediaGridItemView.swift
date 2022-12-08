@@ -14,11 +14,10 @@ struct MediaGridItemView: View {
     let imageURL: URL?
     let aspectRatio: CGFloat
     let circle: Bool
-    
+
     let onTap: () -> Void
 
     var body: some View {
-        
         Button {
             onTap()
         } label: {
@@ -54,8 +53,8 @@ struct MediaGridItemView: View {
 }
 
 // MARK: - Mocks
-extension MediaGridItemView {
 
+extension MediaGridItemView {
     static let mock: Self = MediaGridItemView(
         title: "Title",
         subtitle: "Subtitle",
@@ -76,6 +75,7 @@ extension MediaGridItemView {
 }
 
 // MARK: - Preview
+
 struct MediaGridItemView_Previews: PreviewProvider {
     static var previews: some View {
         MediaGridItemView.mock

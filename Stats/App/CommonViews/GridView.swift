@@ -8,12 +8,11 @@
 import SwiftUI
 
 struct GridView<Content: View>: View {
-
     @ViewBuilder let content: () -> Content
 
     private let width: CGFloat
     private let spacing: CGFloat
-    
+
     init(width: CGFloat = 80, spacing: CGFloat = 20, content: @escaping () -> Content) {
         self.width = width
         self.spacing = spacing

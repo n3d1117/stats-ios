@@ -10,7 +10,6 @@ import Foundation
 import Models
 
 @MainActor class NetworkDataLoader: ObservableObject {
-
     @Dependency(\.networkService) private var networkService
     @Dependency(\.persistenceService) private var persistenceService
 
@@ -39,14 +38,15 @@ import Models
 }
 
 // MARK: - Equatable conformance
+
 extension NetworkDataLoader.State: Equatable {
     static func == (lhs: NetworkDataLoader.State, rhs: NetworkDataLoader.State) -> Bool {
         switch (lhs, rhs) {
         case (.loading, .loading):
             return true
-        case (.success(let lhsValue), .success(let rhsValue)):
+        case let (.success(lhsValue), .success(rhsValue)):
             return lhsValue == rhsValue
-        case (.failed(let lhsError), .failed(let rhsError)):
+        case let (.failed(lhsError), .failed(rhsError)):
             return lhsError.localizedDescription == rhsError.localizedDescription
         default:
             return false

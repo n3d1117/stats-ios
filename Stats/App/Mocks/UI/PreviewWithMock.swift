@@ -9,7 +9,6 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 public struct PreviewWithMock<T>: View where T: View {
-
     let viewToPreview: T
 
     public init(_ viewToPreview: T, initMocks: () -> Void) {

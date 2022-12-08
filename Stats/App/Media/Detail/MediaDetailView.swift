@@ -5,37 +5,37 @@
 //  Created by ned on 02/12/22.
 //
 
-import SwiftUI
 import Models
 import NukeUI
+import SwiftUI
 
 struct MediaDetailView: View {
-    
     @StateObject private var viewModel = MediaDetailViewModel()
     @Environment(\.dismiss) private var dismiss
-    
+
     @Binding var media: Media?
-    
+
     var body: some View {
         ZStack {
             LinearGradient(gradient: .init(colors: [Color("bg_color"), viewModel.dominantColor.opacity(0.5)]), startPoint: .bottomTrailing, endPoint: .topLeading)
                 .opacity(0.5)
                 .ignoresSafeArea()
-            
+
             if let media {
                 VStack(alignment: .leading) {
                     headerView(for: media)
                         .padding(.horizontal)
-                    
+                        .padding(.bottom, media is TVShow ? 0 : 16)
+
                     if let show = media as? TVShow, !show.episodes.isEmpty {
                         Text("\(show.episodes.count) episodes")
                             .foregroundColor(.secondary)
                             .padding(.horizontal)
                             .padding(.top, 6)
-                        
+
                         ScrollView(showsIndicators: false) {
                             Divider().padding(.horizontal)
-                            
+
                             ForEach(show.episodes) { episode in
                                 HStack {
                                     LazyImage(url: show.imageURL) { state in
@@ -50,16 +50,17 @@ struct MediaDetailView: View {
                                     .aspectRatio(show.aspectRatio, contentMode: .fit)
                                     .frame(width: 27)
                                     .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
-                                    
+
                                     VStack(alignment: .leading) {
                                         Text("\(episode.episode) - \(episode.name)")
                                         Text("\(episode.lastWatched.formatted())")
                                             .foregroundColor(.secondary)
+                                            .font(.subheadline)
                                     }
                                 }
                                 .padding(.vertical, 2)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                
+
                                 Divider()
                             }
                             .padding(.horizontal)
@@ -75,7 +76,7 @@ struct MediaDetailView: View {
             }
         }
     }
-    
+
     private func headerView(for media: Media) -> some View {
         HStack(alignment: .top, spacing: 15) {
             LazyImage(url: media.imageURL) { state in
@@ -101,13 +102,13 @@ struct MediaDetailView: View {
                         .font(.system(size: 17))
                         .foregroundColor(.secondary)
                 }
-                
+
                 externalLinkUrl(for: media)
             }
             Spacer()
         }
     }
-    
+
     private func externalLinkUrl(for media: Media) -> some View {
         Button {
             if let url = extractUrl(from: media) {
@@ -128,10 +129,10 @@ struct MediaDetailView: View {
         .buttonStyle(BounceButtonStyle())
         .padding(.vertical, 3)
     }
-    
+
     private func extractUrl(from media: Media) -> URL? {
         var url: URL?
-        
+
         if let movie = media as? Movie {
             if movie.id.hasPrefix("https") {
                 url = URL(string: movie.id)
@@ -147,15 +148,13 @@ struct MediaDetailView: View {
         } else if let game = media as? Game {
             url = URL(string: game.id)
         }
-        
+
         return url
     }
 }
 
 struct MediaDetailView_Previews: PreviewProvider {
-
     struct Preview: View {
-
         @State private var media: Media? = Movie.inception
 
         var body: some View {

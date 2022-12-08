@@ -5,54 +5,49 @@
 //  Created by ned on 05/11/22.
 //
 
-import SwiftUI
-import DependencyInjection
 import Charts
-import Networking
+import DependencyInjection
 import Models
+import Networking
+import SwiftUI
 
 struct StatsView: View {
-    
     @StateObject private var viewModel = StatsViewModel()
     @EnvironmentObject var dataLoader: NetworkDataLoader
     @Environment(\.dismiss) private var dismiss
-    
+
     @State private var selection: Media? = nil
     @State private var showDetails: Bool = false
     @State private var sheetContentHeight: CGFloat = 190
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            
             titleView
                 .padding()
-            
+
             Divider()
-            
+
             ZStack {
                 switch dataLoader.state {
-
-                case .success(let response):
+                case let .success(response):
                     ScrollView {
                         VStack(alignment: .leading) {
-                            
                             timeFilterView
                                 .padding(.top)
-                            
+
                             dateRangeView
                                 .padding(.vertical, 10)
-                            
+
                             chartView
                                 .frame(height: 300)
                                 .animation(.default, value: viewModel.filteredChartData)
-                            
+
                             Text("Details")
                                 .font(.system(size: 22, weight: .semibold, design: .rounded))
                                 .padding(.top)
-                            
+
                             chartListData
                                 .animation(.default, value: viewModel.filteredGridListData)
-                            
                         }
                         .padding()
                     }
@@ -63,36 +58,35 @@ struct StatsView: View {
                 case .loading:
                     ProgressView()
 
-                case .failed(let error):
+                case let .failed(error):
                     GenericErrorView(error: error.localizedDescription) {
                         await dataLoader.load()
                     }
                 }
             }.animation(.default, value: dataLoader.state)
         }
-        
     }
-    
+
     private var titleView: some View {
         HStack {
             Text("Stats")
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
-            
+
             Spacer()
-            
+
             miniChartView
                 .frame(height: 20)
                 .padding(.horizontal, 30)
                 .offset(y: -2)
                 .animation(.default.delay(0.5), value: viewModel.timeFilter)
                 .animation(.default.delay(0.5), value: viewModel.shiftIndex)
-            
+
             Spacer()
-            
+
             closeButton
         }
     }
-    
+
     private var closeButton: some View {
         Button {
             dismiss()
@@ -102,7 +96,7 @@ struct StatsView: View {
                 .foregroundColor(.secondary.opacity(0.7))
         }
     }
-    
+
     private var timeFilterView: some View {
         Picker("Time filter", selection: $viewModel.timeFilter) {
             ForEach(StatsViewModel.TimeFilter.allCases, id: \.rawValue) { type in
@@ -111,7 +105,7 @@ struct StatsView: View {
         }
         .pickerStyle(.segmented)
     }
-    
+
     private var dateRangeView: some View {
         HStack {
             Button {
@@ -123,11 +117,11 @@ struct StatsView: View {
             }
             .foregroundColor(viewModel.previousEnabled ? .secondary.opacity(0.8) : .secondary.opacity(0.3))
             .disabled(!viewModel.previousEnabled)
-            
+
             Text(viewModel.dateIntervalFormatted)
                 .font(.subheadline)
                 .frame(maxWidth: .infinity)
-            
+
             Button {
                 viewModel.shiftIndex += 1
             } label: {
@@ -139,7 +133,7 @@ struct StatsView: View {
             .disabled(!viewModel.nextEnabled)
         }
     }
-    
+
     private var miniChartView: some View {
         Chart {
             ForEach(viewModel.globalChartData) { item in
@@ -160,7 +154,7 @@ struct StatsView: View {
         .chartYAxis(.hidden)
         .chartLegend(.hidden)
     }
-    
+
     private var chartView: some View {
         Chart {
             ForEach(viewModel.filteredChartData) { value in
@@ -170,7 +164,7 @@ struct StatsView: View {
                 )
                 .foregroundStyle(by: .value("", value.group.rawValue))
             }
-            
+
             if viewModel.filteredChartData.isEmpty {
                 RuleMark(y: .value("No content", 0))
                     .foregroundStyle(.clear)
@@ -180,7 +174,7 @@ struct StatsView: View {
                             .foregroundColor(.secondary)
                     }
             }
-            
+
             if let gestureRange = (viewModel.gestureRangeLiveDrag ?? viewModel.gestureRange) {
                 RectangleMark(
                     xStart: .value("Range start", gestureRange.lower),
@@ -197,7 +191,7 @@ struct StatsView: View {
         })
         .chartForegroundStyleScale([
             StatsViewModel.ChartGroupType.movies: .blue,
-            StatsViewModel.ChartGroupType.shows: .green
+            StatsViewModel.ChartGroupType.shows: .green,
         ])
         .chartXAxis {
             AxisMarks(values: .stride(by: viewModel.xAxisStride, count: viewModel.xAxisStrideCount))
@@ -235,7 +229,8 @@ struct StatsView: View {
                                let currentDate: Date = proxy.value(atX: currentX),
                                !startDate.compare(.isSameDay(currentDate)),
                                viewModel.filteredDateRange.contains(startDate),
-                               viewModel.filteredDateRange.contains(currentDate) {
+                               viewModel.filteredDateRange.contains(currentDate)
+                            {
                                 viewModel.gestureRangeLiveDrag = .init(lower: startDate, upper: currentDate)
                             }
                         }
@@ -260,20 +255,20 @@ struct StatsView: View {
             }
         }
     }
-    
+
     private var releaseToApplyView: some View {
         HStack(spacing: 5) {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
                 .font(.subheadline)
                 .foregroundColor(.secondary.opacity(0.6))
                 .padding(.vertical, 3)
-            
+
             Text("Release to apply filter")
                 .foregroundColor(.secondary)
                 .font(.subheadline)
         }.offset(y: -4)
     }
-    
+
     private var filterTextView: some View {
         HStack(spacing: 5) {
             Button {
@@ -287,13 +282,13 @@ struct StatsView: View {
                     .background(.secondary.opacity(0.6), in: Capsule(style: .continuous))
             }
             .foregroundColor(.secondary.opacity(0.8))
-            
+
             Text("\(viewModel.filteredGridListData.count) selected")
                 .foregroundColor(.secondary)
                 .font(.subheadline)
         }.offset(y: -1)
     }
-    
+
     private var chartListData: some View {
         VStack(alignment: .leading) {
             if viewModel.filteredGridListData.isEmpty {
@@ -312,10 +307,11 @@ struct StatsView: View {
                             subtitle: item.subtitle,
                             imageURL: item.imageURL,
                             aspectRatio: 0.7,
-                            circle: false) {
-                                self.selection = item.asMedia
-                                self.showDetails = true
-                            }
+                            circle: false
+                        ) {
+                            self.selection = item.asMedia
+                            self.showDetails = true
+                        }
                     }
                 }
                 .sheet(isPresented: $showDetails, content: {
@@ -339,9 +335,7 @@ struct StatsView: View {
 }
 
 struct StatsView_Previews: PreviewProvider {
-    
     struct Preview: View {
-
         @StateObject private var dataLoader = NetworkDataLoader()
 
         var body: some View {
@@ -353,7 +347,7 @@ struct StatsView_Previews: PreviewProvider {
                 }
         }
     }
-    
+
     static var previews: some View {
         NavigationStack {
             ZStack {

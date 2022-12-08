@@ -15,6 +15,7 @@ enum MediaLayoutType: String {
 }
 
 // MARK: - Environment value
+
 private struct LayoutSwitchKey: EnvironmentKey {
     static let defaultValue: MediaLayoutType = .grid
 }

@@ -8,10 +8,7 @@
 import Models
 
 extension NetworkService {
-
     class Mock: NetworkService {
-
-        // swiftlint:disable nesting
         enum MockType {
             case mockedResponse(APIResponse)
             case throwError(Error)
@@ -27,10 +24,10 @@ extension NetworkService {
 
         override func loadData() async throws -> APIResponse {
             switch mockType {
-            case .mockedResponse(let mockedResponse):
+            case let .mockedResponse(mockedResponse):
                 if wait { try await Task.sleep(nanoseconds: 2_000_000_000) }
                 return mockedResponse
-            case .throwError(let error):
+            case let .throwError(error):
                 if wait { try await Task.sleep(nanoseconds: 2_000_000_000) }
                 throw error
             }

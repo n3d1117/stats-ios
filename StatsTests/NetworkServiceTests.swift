@@ -12,7 +12,6 @@ import Networking
 import XCTest
 
 @MainActor final class NetworkServiceTests: XCTestCase {
-
     let mockedResponse = APIResponse(movies: [], tvShows: [], books: [], artists: [.kanye], games: [])
 
     class APIServiceMock: APIService {
@@ -22,7 +21,7 @@ import XCTest
             self.mockedResponse = mockedResponse
         }
 
-        override func request<T>(_ method: API.Method, _ endpoint: API.Endpoint) async throws -> T where T: Decodable {
+        override func request<T>(_: API.Method, _: API.Endpoint) async throws -> T where T: Decodable {
             if let mockedResponse = mockedResponse as? T {
                 return mockedResponse
             } else {
@@ -36,5 +35,4 @@ import XCTest
         let response = try await networkService.loadData()
         XCTAssertEqual(response, mockedResponse)
     }
-
 }
