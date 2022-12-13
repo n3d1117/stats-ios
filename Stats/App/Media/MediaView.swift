@@ -130,12 +130,16 @@ struct MediaView: View {
 
     @ViewBuilder
     private func artistsView(_ artists: [Artist]) -> some View {
-        section(title: "Music I'm listening to", media: artists)
+        if !artists.isEmpty {
+            section(title: "Music I'm listening to", media: artists)
+        }
     }
 
     @ViewBuilder
     private func gamesView(_ games: [Game]) -> some View {
-        section(title: "Recently played", media: games.sorted(by: { $0.year > $1.year }))
+        if !games.isEmpty {
+            section(title: "Recently played", media: games.sorted(by: { $0.year > $1.year }))
+        }
     }
 
     private func section(title: String, media: [any Media]) -> some View {

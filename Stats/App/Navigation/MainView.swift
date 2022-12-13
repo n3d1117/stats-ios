@@ -13,6 +13,7 @@ struct MainView: View {
 
     @State private var selectedRoute: Route = .movies
     @State private var showCharts = false
+    @State private var showSettings = false
 
     private let gradientColors: [Route: Color] = [
         .movies: .blue,
@@ -26,29 +27,40 @@ struct MainView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                LinearGradient(gradient: .init(colors: [Color("bg_color"), gradientColor.opacity(0.6)]), startPoint: .bottomTrailing, endPoint: .topLeading)
-                    .opacity(0.6)
-                    .ignoresSafeArea()
-                MediaView(mediaType: selectedRoute)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .navigationTitle(selectedRoute.label)
-                    .toolbarTitleMenu {
-                        ForEach(Route.allCases, id: \.hashValue) { route in
-                            let toggleBinding = Binding<Bool>(
-                                get: { selectedRoute == route },
-                                set: { _ in selectedRoute = route }
-                            )
-                            Toggle(isOn: toggleBinding) {
-                                Label(route.label, systemImage: route.image)
-                            }
+            TabView(selection: $selectedRoute) {
+                ForEach(Route.allCases, id: \.hashValue) { route in
+                    MediaView(mediaType: route)
+                        .tag(route)
+                }
+            }
+            .edgesIgnoringSafeArea(.all)
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .navigationBarTitleDisplayMode(.inline)
+                .navigationTitle(selectedRoute.label)
+                .toolbarTitleMenu {
+                    ForEach(Route.allCases, id: \.hashValue) { route in
+                        let toggleBinding = Binding<Bool>(
+                            get: { selectedRoute == route },
+                            set: { _ in withAnimation { selectedRoute = route } }
+                        )
+                        Toggle(isOn: toggleBinding) {
+                            Label(route.label, systemImage: route.image)
                         }
                     }
-                    .toolbar {
-                        layoutButton
-                        chartsButton
-                    }
+                }
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    settingsButton
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    layoutButton
+                    chartsButton
+                }
             }
+            .background(
+                LinearGradient(gradient: .init(colors: [Color("bg_color"), gradientColor.opacity(0.6)]), startPoint: .bottomTrailing, endPoint: .topLeading)
+                .opacity(0.6)
+            )
         }
         .environmentObject(dataLoader)
         .environment(\.layoutType, layoutType)
@@ -63,10 +75,22 @@ struct MainView: View {
     }
 
     private var layoutButton: some View {
-        Button {
-            layoutType = layoutType == .grid ? .list : .grid
+        Menu {
+            Section("Choose layout") {
+                Button {
+                    layoutType = .grid
+                } label: {
+                    Label("Grid", systemImage: "square.grid.2x2")
+                }
+                Button {
+                    layoutType = .list
+                } label: {
+                    Label("List", systemImage: "list.bullet")
+                }
+            }
         } label: {
-            Image(systemName: layoutType == .list ? "square.grid.2x2" : "list.bullet")
+            Image(systemName: "slider.horizontal.3")
+                .font(.subheadline)
         }
         .disabled(!buttonsEnabled)
         .foregroundColor(gradientColor)
@@ -76,7 +100,8 @@ struct MainView: View {
         Button {
             showCharts.toggle()
         } label: {
-            Image(systemName: "chart.xyaxis.line")
+            Image(systemName: "chart.pie")
+                .font(.subheadline)
         }
         .disabled(!buttonsEnabled)
         .foregroundColor(gradientColor)
@@ -93,6 +118,26 @@ struct MainView: View {
         }
     }
 
+    private var settingsButton: some View {
+        Button {
+            showSettings.toggle()
+        } label: {
+            Image(systemName: "gear")
+                .font(.subheadline)
+        }
+        .foregroundColor(gradientColor)
+        .sheet(isPresented: $showSettings) {
+            NavigationStack {
+                ZStack {
+                    LinearGradient(gradient: .init(colors: [Color("bg_color"), .gray.opacity(0.5)]), startPoint: .bottomTrailing, endPoint: .topLeading)
+                        .opacity(0.5)
+                        .ignoresSafeArea()
+                    SettingsView()
+                }
+            }
+        }
+    }
+
     private var buttonsEnabled: Bool {
         switch dataLoader.state {
         case .success: return true
@@ -104,7 +149,7 @@ struct MainView: View {
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWithMock(MainView()) {
-            DependencyValues[\.networkService] = .mock(movies: [.inception], wait: false)
+            DependencyValues[\.networkService] = .mock(movies: [.inception], shows: [.boris], wait: false)
             DependencyValues[\.persistenceService] = .mock
         }
     }
