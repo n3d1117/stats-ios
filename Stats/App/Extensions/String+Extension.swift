@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import Models
-import Networking
 
 extension String {
     var urlEncoded: String {
@@ -15,8 +13,3 @@ extension String {
     }
 }
 
-extension Media {
-    var imageURL: URL? {
-        URL(string: (API.baseImageUrl + image).urlEncoded)
-    }
-}
