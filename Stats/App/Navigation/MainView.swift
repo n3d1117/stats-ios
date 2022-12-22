@@ -36,18 +36,19 @@ struct MainView: View {
             .edgesIgnoringSafeArea(.all)
             .tabViewStyle(.page(indexDisplayMode: .never))
             .navigationBarTitleDisplayMode(.inline)
-                .navigationTitle(selectedRoute.label)
-                .toolbarTitleMenu {
-                    ForEach(Route.allCases, id: \.hashValue) { route in
-                        let toggleBinding = Binding<Bool>(
-                            get: { selectedRoute == route },
-                            set: { _ in withAnimation { selectedRoute = route } }
-                        )
-                        Toggle(isOn: toggleBinding) {
-                            Label(route.label, systemImage: route.image)
-                        }
+            .navigationTitle(selectedRoute.label)
+            .toolbarTitleMenu {
+                ForEach(Route.allCases, id: \.hashValue) { route in
+                    let toggleBinding = Binding<Bool>(
+                        get: { selectedRoute == route },
+                        set: { _ in withAnimation { selectedRoute = route } }
+                    )
+                    Toggle(isOn: toggleBinding) {
+                        Label(route.label, systemImage: route.image)
                     }
                 }
+            }
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
                     settingsButton
@@ -59,7 +60,7 @@ struct MainView: View {
             }
             .background(
                 LinearGradient(gradient: .init(colors: [Color("bg_color"), gradientColor.opacity(0.6)]), startPoint: .bottomTrailing, endPoint: .topLeading)
-                .opacity(0.6)
+                    .opacity(0.6)
             )
         }
         .environmentObject(dataLoader)
@@ -76,17 +77,11 @@ struct MainView: View {
 
     private var layoutButton: some View {
         Menu {
-            Section("Choose layout") {
-                Button {
-                    layoutType = .grid
-                } label: {
-                    Label("Grid", systemImage: "square.grid.2x2")
-                }
-                Button {
-                    layoutType = .list
-                } label: {
-                    Label("List", systemImage: "list.bullet")
-                }
+            Picker("", selection: $layoutType) {
+                Label("Grid", systemImage: "square.grid.2x2")
+                    .tag(MediaLayoutType.grid)
+                Label("List", systemImage: "list.bullet")
+                    .tag(MediaLayoutType.list)
             }
         } label: {
             Image(systemName: "slider.horizontal.3")
