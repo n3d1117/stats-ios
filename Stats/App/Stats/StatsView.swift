@@ -14,7 +14,6 @@ import SwiftUI
 struct StatsView: View {
     @StateObject private var viewModel = StatsViewModel()
     @EnvironmentObject var dataLoader: NetworkDataLoader
-    @Environment(\.dismiss) private var dismiss
 
     @State private var selection: Media? = nil
     @State private var showDetails: Bool = false
@@ -91,17 +90,7 @@ struct StatsView: View {
 
             Spacer()
 
-            closeButton
-        }
-    }
-
-    private var closeButton: some View {
-        Button {
-            dismiss()
-        } label: {
-            Image(systemName: "xmark.circle.fill")
-                .font(.system(size: 17, weight: .semibold, design: .rounded))
-                .foregroundColor(.secondary.opacity(0.7))
+            CloseButton()
         }
     }
 

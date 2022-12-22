@@ -7,24 +7,35 @@ import NukeUI
 
 struct SettingsView: View {
     
+    @StateObject private var viewModel = SettingsViewModel()
+    
     @State private var point = CGPoint(x: 0, y: 0)
     @State private var degrees: Double = 0
+    @State private var imageHeight: CGFloat = 160
     
     var body: some View {
         VStack {
+            HStack {
+                Spacer()
+                CloseButton()
+            }
+            .padding(.horizontal)
+            
             GeometryReader { geometry in
                 LazyImage(url: URL(string: "https://edoardo.fyi/me.jpeg")) { state in
                     if let image = state.image {
                         image
+                            .clipShape(Circle())
                     } else {
                         Image(systemName: "photo")
                             .resizable()
+                            .clipShape(Circle())
                             .redacted(reason: .placeholder)
                     }
                 }
                 .scaledToFill()
-                .padding()
-                .frame(maxWidth: 200, maxHeight: 200)
+                .padding(5)
+                .frame(width: imageHeight, height: imageHeight)
                 .contentShape(Rectangle())
                 .rotation3DEffect(.degrees(degrees), axis: (x: point.x, y: point.y, z: 0))
                 .simultaneousGesture(
@@ -55,17 +66,49 @@ struct SettingsView: View {
                         }
                 )
             }
-            .frame(maxWidth: 200, maxHeight: 200)
+            .frame(width: imageHeight, height: imageHeight)
+            
+            HStack(alignment: .lastTextBaseline) {
+                Text("Stats")
+                    .font(.title)
+                    .fontWeight(.semibold)
+                
+                if let appVersion = viewModel.appVersion {
+                    Text("v" + appVersion)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.bottom, 1)
+            
+            Group {
+                Text("Made with ") + Text(Image(systemName: "heart")).font(.caption).baselineOffset(2) + Text(" by ned")
+            }
+            .foregroundColor(.secondary)
+            
+            List {
+                Section("Links") {
+                    LabeledContent("Website") {
+                        Link("edoardo.fyi", destination: URL(string: "https://edoardo.fyi")!)
+                    }
+                    LabeledContent("GitHub") {
+                        Link("n3d1117/stats-ios", destination: URL(string: "https://github.com/n3d1117/stats-ios")!)
+                    }
+                }
+                .listRowBackground(Color(UIColor.darkGray).opacity(0.3))
+                
+                Section("Acknowledgements") {
+                    Link("kean/Nuke", destination: URL(string: "https://github.com/kean/Nuke.git")!)
+                    Link("mergesort/Boutique", destination: URL(string: "https://github.com/mergesort/Boutique")!)
+                    Link("malcommac/SwiftDate", destination: URL(string: "https://github.com/malcommac/SwiftDate")!)
+                    Link("indragiek/DominantColor", destination: URL(string: "https://github.com/indragiek/DominantColor")!)
+                }
+                .listRowBackground(Color(UIColor.darkGray).opacity(0.2))
+            }
+            .scrollDisabled(true)
+            .scrollContentBackground(.hidden)
         }
-    }
-}
-
-fileprivate extension Comparable {
-    func clamped(_ f: Self, _ t: Self)  ->  Self {
-        var r = self
-        if r < f { r = f }
-        if r > t { r = t }
-        return r
+        .padding(.top)
     }
 }
 

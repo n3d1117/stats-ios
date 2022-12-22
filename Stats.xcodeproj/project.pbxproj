@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1A98D72D9E0870BDD7304894 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A98D09869F5BF91EF092663 /* SettingsView.swift */; };
 		810449BB295471A30010677E /* Media+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810449BA295471A30010677E /* Media+Extension.swift */; };
+		810449BD29547BB10010677E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810449BC29547BB00010677E /* SettingsViewModel.swift */; };
+		810449BF29547D0A0010677E /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810449BE29547D0A0010677E /* CloseButton.swift */; };
 		8143B2C5291010F800BB571E /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8143B2C4291010F800BB571E /* Route.swift */; };
 		8143B2C72910112300BB571E /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8143B2C62910112300BB571E /* MainView.swift */; };
 		8143B2CD2910158900BB571E /* NetworkDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8143B2CC2910158900BB571E /* NetworkDataLoader.swift */; };
@@ -65,6 +67,8 @@
 /* Begin PBXFileReference section */
 		1A98D09869F5BF91EF092663 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		810449BA295471A30010677E /* Media+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Media+Extension.swift"; sourceTree = "<group>"; };
+		810449BC29547BB00010677E /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		810449BE29547D0A0010677E /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
 		8143B2C4291010F800BB571E /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		8143B2C62910112300BB571E /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		8143B2CC2910158900BB571E /* NetworkDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDataLoader.swift; sourceTree = "<group>"; };
@@ -135,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				1A98D09869F5BF91EF092663 /* SettingsView.swift */,
+				810449BC29547BB00010677E /* SettingsViewModel.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -193,6 +198,7 @@
 				8143B2D9291024FD00BB571E /* MediaGridItemView.swift */,
 				81CEDBF329112EFA00C5EFE6 /* MediaListItemView.swift */,
 				8143B2DB291026FC00BB571E /* GridView.swift */,
+				810449BE29547D0A0010677E /* CloseButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -475,6 +481,8 @@
 				8143B2D82910234500BB571E /* String+Extension.swift in Sources */,
 				8143B2F82910364400BB571E /* Artist+Mocks.swift in Sources */,
 				8143B2DC291026FC00BB571E /* GridView.swift in Sources */,
+				810449BF29547D0A0010677E /* CloseButton.swift in Sources */,
+				810449BD29547BB10010677E /* SettingsViewModel.swift in Sources */,
 				8143B2F32910345500BB571E /* Book+Mocks.swift in Sources */,
 				81CEDC022911571F00C5EFE6 /* PersistentService+Mock.swift in Sources */,
 				817B0B8B291122B60088548D /* PreviewWithMock.swift in Sources */,
@@ -649,7 +657,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = it.ned.stats;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -678,7 +686,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = it.ned.stats;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
