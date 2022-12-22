@@ -278,23 +278,22 @@ struct StatsView: View {
     }
 
     private var filterTextView: some View {
-        HStack(spacing: 5) {
-            Button {
-                viewModel.clearSelection()
-            } label: {
-                Text("Clear")
+        Button {
+            viewModel.clearSelection()
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: "trash")
+                    .font(.system(size: 10))
+                Text("Clear selection")
                     .font(.caption)
-                    .foregroundColor(.white.opacity(0.8))
-                    .padding(.vertical, 3)
-                    .padding(.horizontal, 8)
-                    .background(.secondary.opacity(0.6), in: Capsule(style: .continuous))
             }
-            .foregroundColor(.secondary.opacity(0.8))
-
-            Text("\(viewModel.filteredGridListData.count) selected")
-                .foregroundColor(.secondary)
-                .font(.subheadline)
-        }.offset(y: -1)
+            .foregroundColor(.white.opacity(0.8))
+            .padding(.vertical, 3)
+            .padding(.horizontal, 8)
+            .background(.secondary.opacity(0.6), in: Capsule(style: .continuous))
+        }
+        .foregroundColor(.secondary.opacity(0.8))
+        .offset(y: -1)
     }
 
     private var chartListData: some View {
