@@ -130,7 +130,7 @@ extension StatsViewModel {
     }
 
     var dateIntervalFormatted: String {
-        let range: DateRange = gestureRangeLiveDrag ?? filteredDateRange
+        let range: DateRange = gestureRangeLiveDrag ?? gestureRange ?? filteredDateRange
         return dateIntervalFormatter.string(from: range.range.lowerBound, to: range.range.upperBound).capitalized
     }
 
