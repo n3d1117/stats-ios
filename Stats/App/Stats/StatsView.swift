@@ -42,9 +42,17 @@ struct StatsView: View {
                                 .frame(height: 300)
                                 .animation(.default, value: viewModel.filteredChartData)
 
-                            Text("Details")
-                                .font(.system(size: 22, weight: .semibold, design: .rounded))
-                                .padding(.top)
+                            HStack {
+                                Text("Details")
+                                    .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                
+                                Spacer()
+                                
+                                Text("\(viewModel.nMovies) movies, \(viewModel.nEpisodes) episodes")
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline)
+                            }
+                            .padding(.top)
 
                             chartListData
                                 .animation(.default, value: viewModel.filteredGridListData)

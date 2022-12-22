@@ -134,6 +134,26 @@ extension StatsViewModel {
         return dateIntervalFormatter.string(from: range.range.lowerBound, to: range.range.upperBound).capitalized
     }
 
+    var nEpisodes: Int {
+        var nEpisodes = 0
+        filteredGridListData.forEach { data in
+            if case .show(let show) = data.item {
+                nEpisodes += show.episodes.count
+            }
+        }
+        return nEpisodes
+    }
+    
+    var nMovies: Int {
+        var nMovies = 0
+        filteredGridListData.forEach { data in
+            if case .movie(_) = data.item {
+                nMovies += 1
+            }
+        }
+        return nMovies
+    }
+    
     var xAxisStride: Calendar.Component {
         switch timeFilter {
         case .year, .sixMonths: return .month
