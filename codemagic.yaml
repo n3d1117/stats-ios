@@ -15,7 +15,7 @@ workflows:
         - pattern: "*"
           include: true
           source: true
-#    scripts:
+    scripts:
 #      - name: Test
 #        script: |
 #          #!/bin/sh
