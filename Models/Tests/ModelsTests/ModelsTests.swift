@@ -50,7 +50,7 @@ final class ModelsTests: XCTestCase {
     }
 
     func testGameMediaConformance() throws {
-        let gowAsMedia: Game = gow
+        let gowAsMedia: Media = gow
         XCTAssertEqual(gowAsMedia.id, gow.id)
         XCTAssertEqual(gowAsMedia.title, gow.title)
         XCTAssertEqual(gowAsMedia.subtitle, String(gow.year))
