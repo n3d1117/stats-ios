@@ -33,10 +33,13 @@ struct SettingsView: View {
                 LabeledContent("GitHub") {
                     Link("n3d1117/stats-ios", destination: URL(string: "https://github.com/n3d1117/stats-ios")!)
                 }
+                LabeledContent("Donate") {
+                    Link("Buy me a Coffee", destination: URL(string: "https://buymeacoff.ee/ne_do")!)
+                }
             }
             .listRowBackground(Color(UIColor.darkGray).opacity(0.25))
             
-            Section("Acknowledgements") {
+            Section("Third party libraries") {
                 Link("kean/Nuke", destination: URL(string: "https://github.com/kean/Nuke.git")!)
                 Link("mergesort/Boutique", destination: URL(string: "https://github.com/mergesort/Boutique")!)
                 Link("malcommac/SwiftDate", destination: URL(string: "https://github.com/malcommac/SwiftDate")!)
