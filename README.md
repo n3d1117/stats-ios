@@ -7,7 +7,7 @@
 My personal iOS app to track things I've watched/read/listened/played, written in SwiftUI
 
 ## Screenshots
-![screenshots.pdf](https://github.com/n3d1117/stats-ios/files/10369108/screenshots.pdf)
+![screenshots](https://user-images.githubusercontent.com/11541888/225115254-218c3a9c-f8d7-4511-bd7e-0b194827a458.png)
 
 ## Motivation
 The main motivation behind the development of Stats was to learn and explore advanced concepts in iOS development, such as:
