@@ -15,9 +15,8 @@ struct StatsView: View {
     @StateObject private var viewModel = StatsViewModel()
     @EnvironmentObject var dataLoader: NetworkDataLoader
 
-    @State private var selection: Media? = nil
-    @State private var showDetails: Bool = false
-    @State private var sheetContentHeight: CGFloat = 190
+    @State private var selection: AnyMediaModel?
+    @State private var sheetContentHeight: CGFloat = .zero
 
     var body: some View {
         VStack(spacing: 0) {
@@ -305,14 +304,13 @@ struct StatsView: View {
                             aspectRatio: 0.7,
                             circle: false
                         ) {
-                            self.selection = item.asMedia
-                            self.showDetails = true
+                            self.selection = item.asMedia.asMediaModel
                         }
                     }
                 }
-                .sheet(isPresented: $showDetails, content: {
-                    let hasEpisodes = !((selection as? TVShow)?.episodes.isEmpty ?? true)
-                    MediaDetailView(media: $selection)
+                .sheet(item: $selection, content: { item in
+                    let hasEpisodes = !((item.base as? TVShow)?.episodes.isEmpty ?? true)
+                    MediaDetailView(media: item.base)
                         .if(hasEpisodes, transform: { view in
                             view
                                 .presentationDetents([.medium, .large])

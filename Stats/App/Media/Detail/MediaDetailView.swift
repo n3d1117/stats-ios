@@ -13,7 +13,7 @@ struct MediaDetailView: View {
     @StateObject private var viewModel = MediaDetailViewModel()
     @Environment(\.dismiss) private var dismiss
 
-    @Binding var media: Media?
+    let media: Media?
 
     var body: some View {
         ZStack {
@@ -24,47 +24,17 @@ struct MediaDetailView: View {
             if let media {
                 VStack(alignment: .leading) {
                     headerView(for: media)
-                        .padding(.horizontal)
-                        .padding(.bottom, media is TVShow ? 0 : 16)
-
-                    if let show = media as? TVShow, !show.episodes.isEmpty {
-                        Text("\(show.episodes.count) episodes")
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal)
-                            .padding(.top, 6)
-
-                        ScrollView(showsIndicators: false) {
-                            Divider().padding(.horizontal)
-
-                            ForEach(show.episodes) { episode in
-                                HStack {
-                                    LazyImage(url: show.imageURL) { state in
-                                        if let image = state.image {
-                                            image
-                                        } else {
-                                            Image(systemName: "photo")
-                                                .resizable()
-                                                .redacted(reason: .placeholder)
-                                        }
-                                    }
-                                    .aspectRatio(show.aspectRatio, contentMode: .fit)
-                                    .frame(width: 27)
-                                    .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
-
-                                    VStack(alignment: .leading) {
-                                        Text("\(episode.episode) - \(episode.name)")
-                                        Text("\(episode.lastWatched.formatted())")
-                                            .foregroundColor(.secondary)
-                                            .font(.subheadline)
-                                    }
-                                }
-                                .padding(.vertical, 2)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                                Divider()
-                            }
-                            .padding(.horizontal)
+                        .padding([.horizontal, .bottom])
+                    
+                    switch media {
+                    case let show as TVShow:
+                        if !show.episodes.isEmpty {
+                            showDetailsView(for: show)
                         }
+                    case let movie as Movie:
+                        movieDetailsView(for: movie)
+                    default:
+                        EmptyView()
                     }
                 }
                 .padding(.top, 25)
@@ -73,6 +43,54 @@ struct MediaDetailView: View {
         .task {
             if let imageURL = media?.imageURL {
                 await viewModel.extractDominantColor(for: imageURL)
+            }
+        }
+    }
+    
+    private func movieDetailsView(for movie: Movie) -> some View {
+        Label(movie.lastWatched.formatted(), systemImage: "calendar")
+            .foregroundColor(.secondary)
+            .padding([.horizontal, .bottom])
+    }
+    
+    private func showDetailsView(for show: TVShow) -> some View {
+        VStack(alignment: .leading) {
+            Text("\(show.episodes.count) episodes")
+                .foregroundColor(.secondary)
+                .padding(.horizontal)
+                .padding(.top, 6)
+
+            ScrollView(showsIndicators: false) {
+                Divider().padding(.horizontal)
+
+                ForEach(show.episodes) { episode in
+                    HStack {
+                        LazyImage(url: show.imageURL) { state in
+                            if let image = state.image {
+                                image
+                            } else {
+                                Image(systemName: "photo")
+                                    .resizable()
+                                    .redacted(reason: .placeholder)
+                            }
+                        }
+                        .aspectRatio(show.aspectRatio, contentMode: .fit)
+                        .frame(width: 27)
+                        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+
+                        VStack(alignment: .leading) {
+                            Text("\(episode.episode) — \(episode.name)")
+                            Text(episode.lastWatched.formatted())
+                                .foregroundColor(.secondary)
+                                .font(.subheadline)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Divider()
+                }
+                .padding(.horizontal)
             }
         }
     }
@@ -95,6 +113,7 @@ struct MediaDetailView: View {
 
             VStack(alignment: .leading, spacing: 7) {
                 Text(media.title)
+                    .fixedSize(horizontal: false, vertical: true)
                     .font(.system(size: 25, weight: .semibold, design: .rounded))
 
                 if let subtitle = media.subtitle {
@@ -155,10 +174,8 @@ struct MediaDetailView: View {
 
 struct MediaDetailView_Previews: PreviewProvider {
     struct Preview: View {
-        @State private var media: Media? = Movie.inception
-
         var body: some View {
-            MediaDetailView(media: $media)
+            MediaDetailView(media: Movie.inception)
         }
     }
 

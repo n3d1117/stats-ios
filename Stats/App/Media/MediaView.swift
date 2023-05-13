@@ -15,9 +15,8 @@ struct MediaView: View {
     @EnvironmentObject var dataLoader: NetworkDataLoader
     @Environment(\.layoutType) var layoutType
 
-    @State private var selection: Media? = nil
-    @State private var showDetails: Bool = false
-    @State private var sheetContentHeight: CGFloat = 190
+    @State private var selection: AnyMediaModel?
+    @State private var sheetContentHeight: CGFloat = .zero
 
     var body: some View {
         ZStack {
@@ -76,11 +75,11 @@ struct MediaView: View {
             .filter { $0.isFavorite }
 
         if !recentlyWatched.isEmpty {
-            section(title: "Recently watched", media: recentlyWatched)
+            section(title: "Recently watched", media: recentlyWatched.asMediaModels)
         }
 
         if !favorites.isEmpty {
-            section(title: "Favorites", media: favorites)
+            section(title: "Favorites", media: favorites.asMediaModels)
         }
     }
 
@@ -94,11 +93,11 @@ struct MediaView: View {
             .filter { $0.isFavorite }
 
         if !recentlyWatched.isEmpty {
-            section(title: "Recently watched", media: recentlyWatched)
+            section(title: "Recently watched", media: recentlyWatched.asMediaModels)
         }
 
         if !favorites.isEmpty {
-            section(title: "Favorites", media: favorites)
+            section(title: "Favorites", media: favorites.asMediaModels)
         }
     }
 
@@ -116,44 +115,43 @@ struct MediaView: View {
             .filter { $0.isFavorite }
 
         if !reading.isEmpty {
-            section(title: "Reading", media: reading)
+            section(title: "Reading", media: reading.asMediaModels)
         }
 
         if !recentlyRead.isEmpty {
-            section(title: "Recently read", media: recentlyRead)
+            section(title: "Recently read", media: recentlyRead.asMediaModels)
         }
 
         if !favorites.isEmpty {
-            section(title: "Favorites", media: favorites)
+            section(title: "Favorites", media: favorites.asMediaModels)
         }
     }
 
     @ViewBuilder
     private func artistsView(_ artists: [Artist]) -> some View {
         if !artists.isEmpty {
-            section(title: "Music I'm listening to", media: artists)
+            section(title: "Music I'm listening to", media: artists.asMediaModels)
         }
     }
 
     @ViewBuilder
     private func gamesView(_ games: [Game]) -> some View {
         if !games.isEmpty {
-            section(title: "Recently played", media: games.sorted(by: { $0.year > $1.year }))
+            section(title: "Recently played", media: games.sorted(by: { $0.year > $1.year }).asMediaModels)
         }
     }
 
-    private func section(title: String, media: [any Media]) -> some View {
+    private func section(title: String, media: [AnyMediaModel]) -> some View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
             MediaContentView(media: media) { item in
-                self.selection = item
-                self.showDetails = true
+                self.selection = item.asMediaModel
             }
         }
-        .sheet(isPresented: $showDetails, content: {
-            let hasEpisodes = !((selection as? TVShow)?.episodes.isEmpty ?? true)
-            MediaDetailView(media: $selection)
+        .sheet(item: $selection, content: { item in
+            let hasEpisodes = !((item.base as? TVShow)?.episodes.isEmpty ?? true)
+            MediaDetailView(media: item.base)
                 .if(hasEpisodes, transform: { view in
                     view
                         .presentationDetents([.medium, .large])

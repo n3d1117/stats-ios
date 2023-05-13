@@ -10,7 +10,7 @@ import Networking
 import SwiftUI
 
 struct MediaContentView: View {
-    let media: [any Media]
+    let media: [AnyMediaModel]
     let onTap: (Media) -> Void
 
     @Environment(\.layoutType) var layoutType
@@ -20,29 +20,29 @@ struct MediaContentView: View {
             switch layoutType {
             case .grid:
                 GridView {
-                    ForEach(media, id: \.id) { item in
+                    ForEach(media) { item in
                         MediaGridItemView(
-                            title: item.title,
-                            subtitle: item.subtitle,
-                            imageURL: item.imageURL,
-                            aspectRatio: item.aspectRatio,
-                            circle: item.circle
+                            title: item.base.title,
+                            subtitle: item.base.subtitle,
+                            imageURL: item.base.imageURL,
+                            aspectRatio: item.base.aspectRatio,
+                            circle: item.base.circle
                         ) {
-                            onTap(item)
+                            onTap(item.base)
                         }
                     }
                 }
             case .list:
                 LazyVStack {
-                    ForEach(media, id: \.id) { item in
+                    ForEach(media) { item in
                         MediaListItemView(
-                            title: item.title,
-                            subtitle: item.subtitle,
-                            imageURL: item.imageURL,
-                            aspectRatio: item.aspectRatio,
-                            circle: item.circle
+                            title: item.base.title,
+                            subtitle: item.base.subtitle,
+                            imageURL: item.base.imageURL,
+                            aspectRatio: item.base.aspectRatio,
+                            circle: item.base.circle
                         ) {
-                            onTap(item)
+                            onTap(item.base)
                         }
                     }
                 }

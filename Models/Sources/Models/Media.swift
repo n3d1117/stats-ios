@@ -57,3 +57,30 @@ extension Game: Media {
     public var aspectRatio: CGFloat { Constants.aspectRatio }
     public var circle: Bool { false }
 }
+
+// MARK: - AnyMediaModel
+/// A simple `any Media` wrapper to fix  `Type ‘any Media’ cannot conform to ‘Identifiable’`
+@available(iOS 13.0, *)
+public struct AnyMediaModel: Identifiable {
+    public var base: any Media
+    public var id: String { base.id }
+    
+    public init(base: any Media) {
+        self.base = base
+    }
+}
+
+@available(iOS 13.0, *)
+public extension Media {
+    var asMediaModel: AnyMediaModel {
+        .init(base: self)
+    }
+}
+
+
+@available(iOS 13.0, *)
+public extension Array where Element: Media {
+    var asMediaModels: [AnyMediaModel] {
+        map({ media in AnyMediaModel.init(base: media) })
+    }
+}
