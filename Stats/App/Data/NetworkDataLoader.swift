@@ -22,16 +22,16 @@ import Models
     }
 
     func load() async {
-        if persistenceService.persistedResponse != .empty {
-            state = .success(persistenceService.persistedResponse)
-        }
         do {
             let response = try await networkService.loadData()
             state = .success(response)
             try await persistenceService.set(response)
         } catch {
-            if persistenceService.persistedResponse == .empty {
+            let cachedResponse = persistenceService.persistedResponse
+            if cachedResponse == .empty {
                 state = .failed(error)
+            } else {
+                state = .success(cachedResponse)
             }
         }
     }
