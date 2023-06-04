@@ -38,10 +38,8 @@ import SwiftDate
             .filter { $0.lastWatched.dateComponents.year! >= 2021 }
             .map { ChartData(id: $0.id, date: $0.lastWatched, group: .shows, dataType: .episode($0)) }
 
-        // data
         globalChartData = (moviesData + showsData)
 
-        // range
         let allDates = globalChartData.map(\.date).sorted()
         if let minDate = allDates.min(), let maxDate = allDates.max() {
             globalDateRange = .init(lower: minDate, upper: maxDate)
@@ -84,10 +82,10 @@ import SwiftDate
 }
 
 // MARK: - Computed vars
-
 extension StatsViewModel {
     var filteredGridListData: [GridListData] {
         var gridData: [GridListData] = []
+        var episodes: [TVShow.Episode] = []
 
         var source = filteredChartData
 
@@ -95,17 +93,16 @@ extension StatsViewModel {
             source = source.filter { gestureRange.contains($0.date) }
         }
 
-        var eps: [TVShow.Episode] = []
-        for d in source {
-            switch d.dataType {
+        for entry in source {
+            switch entry.dataType {
             case let .movie(movie):
                 gridData.append(.init(.movie(movie)))
             case let .episode(episode):
-                eps.append(episode)
+                episodes.append(episode)
             }
         }
 
-        let groupedShows: [TVShow] = Dictionary(grouping: eps, by: { $0.parentShowID }).compactMap { showID, episodes in
+        let groupedShows: [TVShow] = Dictionary(grouping: episodes, by: { $0.parentShowID }).compactMap { showID, episodes in
             if var fullShow = apiResponse.tvShows.first(where: { $0.id == showID }) {
                 fullShow.episodes = episodes
                 return fullShow
@@ -252,38 +249,15 @@ extension StatsViewModel {
             self.item = item
         }
 
-        var id: String {
-            switch item {
-            case let .movie(movie): return movie.id
-            case let .show(show): return show.id
-            }
-        }
-
+        var id: String { asMedia.id }
+        var image: String { asMedia.image }
+        var title: String { asMedia.title }
+        var imageURL: URL? { asMedia.imageURL }
+        
         var date: Date {
             switch item {
             case let .movie(movie): return movie.lastWatched
             case let .show(show): return show.episodes.map(\.lastWatched).max() ?? show.lastWatched
-            }
-        }
-
-        var image: String {
-            switch item {
-            case let .movie(movie): return movie.image
-            case let .show(show): return show.image
-            }
-        }
-
-        var title: String {
-            switch item {
-            case let .movie(movie): return movie.title
-            case let .show(show): return show.title
-            }
-        }
-
-        var imageURL: URL? {
-            switch item {
-            case let .movie(movie): return movie.imageURL
-            case let .show(show): return show.imageURL
             }
         }
 

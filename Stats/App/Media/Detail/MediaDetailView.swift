@@ -130,7 +130,7 @@ struct MediaDetailView: View {
 
     private func externalLinkUrl(for media: Media) -> some View {
         Button {
-            if let url = extractUrl(from: media) {
+            if let url = viewModel.extractUrl(from: media) {
                 UIApplication.shared.open(url)
             }
         } label: {
@@ -147,28 +147,6 @@ struct MediaDetailView: View {
         }
         .buttonStyle(BounceButtonStyle())
         .padding(.vertical, 3)
-    }
-
-    private func extractUrl(from media: Media) -> URL? {
-        var url: URL?
-
-        if let movie = media as? Movie {
-            if movie.id.hasPrefix("https") {
-                url = URL(string: movie.id)
-            } else {
-                url = URL(string: "https://www.themoviedb.org/movie/\(movie.id)")
-            }
-        } else if let show = media as? TVShow {
-            url = URL(string: "https://www.themoviedb.org/tv/\(show.id)")
-        } else if let book = media as? Book {
-            url = URL(string: book.id)
-        } else if let artist = media as? Artist {
-            url = URL(string: artist.id)
-        } else if let game = media as? Game {
-            url = URL(string: game.id)
-        }
-
-        return url
     }
 }
 

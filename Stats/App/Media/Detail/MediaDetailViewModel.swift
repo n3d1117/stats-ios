@@ -9,6 +9,7 @@ import DominantColor
 import Foundation
 import Nuke
 import SwiftUI
+import Models
 
 @MainActor final class MediaDetailViewModel: ObservableObject {
     @Published private(set) var dominantColor: Color = .indigo
@@ -22,5 +23,27 @@ import SwiftUI
         } catch {
             print(error)
         }
+    }
+    
+    func extractUrl(from media: Media) -> URL? {
+        var url: URL?
+
+        if let movie = media as? Movie {
+            if movie.id.hasPrefix("https") {
+                url = URL(string: movie.id)
+            } else {
+                url = URL(string: "https://www.themoviedb.org/movie/\(movie.id)")
+            }
+        } else if let show = media as? TVShow {
+            url = URL(string: "https://www.themoviedb.org/tv/\(show.id)")
+        } else if let book = media as? Book {
+            url = URL(string: book.id)
+        } else if let artist = media as? Artist {
+            url = URL(string: artist.id)
+        } else if let game = media as? Game {
+            url = URL(string: game.id)
+        }
+
+        return url
     }
 }
