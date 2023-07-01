@@ -20,12 +20,12 @@ final class ModelsTests: XCTestCase {
         let inceptionAsMedia: Media = inception
         XCTAssertEqual(inceptionAsMedia.id, inception.id)
         XCTAssertEqual(inceptionAsMedia.title, inception.title)
-        XCTAssertEqual(inceptionAsMedia.subtitle, String(inception.year))
+        XCTAssertEqual(inceptionAsMedia.subtitle, Date().formatted(date: .abbreviated, time: .omitted))
     }
 
     func testCinemaMovieMediaConformance() throws {
         let cinemaMovieAsMedia: Media = cinemaMovie
-        XCTAssertEqual(cinemaMovieAsMedia.subtitle, String(cinemaMovie.year) + " 🎬")
+        XCTAssertEqual(cinemaMovieAsMedia.subtitle, Date().formatted(date: .abbreviated, time: .omitted) + " 🎬")
     }
 
     func testTVShowMediaConformance() throws {

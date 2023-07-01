@@ -22,7 +22,7 @@ public protocol Media {
 }
 
 extension Movie: Media {
-    public var subtitle: String? { String(year) + (isCinema ? " 🎬" : "") }
+    public var subtitle: String? { lastWatched.formatted(date: .abbreviated, time: .omitted) + (isCinema ? " 🎬" : "") }
     public var image: String { img }
     public var aspectRatio: CGFloat { Constants.aspectRatio }
     public var circle: Bool { false }
